@@ -1,15 +1,24 @@
 s.boot;
 
+b = Buffer.read(s,"/Users/gioelepozzi/Desktop/SASP-CM-Project/AudioSamples/NOTE.aif");
+
+//wahwah -> bandpass filterwith resonant peak at its low-pass roll-off frequency
+
+(
 SynthDef.new("wahwah",
 	{
 		arg
 		freq = 750;
+		var signal = PlayBuf.ar(2, b.bufnum);
+		//var signal = In.ar(2);
 
-		var signal = In.ar(2);
-		var output = RHPF.ar(in:signal,freq:freq,rq:1);
+		var outputHPF = HPF.ar(in:signal,freq:freq);
+		var outputRHPF = RHPF.ar(in:outputHPF,freq:freq,rq:2);
+		var output = LPF.ar(in:outputRHPF,freq:freq);
 
 		Out.ar([0,1], channelsArray:output);
     }).send;
+)
 
 x = Synth("wahwah");
 
@@ -31,7 +40,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 ~freq_slider = Slider(w, slider_dim_width@slider_dim_height)
 .value_(0.5)
 .action_({ arg obj;
-	       var freq = obj.value.round(0.01);
+	       var freq = obj.value.linlin(0,1,450,1600).round(1);
 	       x.set(\freq, freq);
            });
 
