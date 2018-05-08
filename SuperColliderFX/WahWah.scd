@@ -1,6 +1,6 @@
 s.boot;
 
-b = Buffer.read(s,"/Users/alessandro/Desktop/WAHWAH.aif");
+b = Buffer.read(s,"/Users/gioelepozzi/Desktop/SASP-CM-Project/AudioSamples/WAHWAH.aif");
 
 //wahwah -> bandpass filterwith resonant peak at its low-pass roll-off frequency
 
@@ -39,7 +39,8 @@ w = Window("Wah-Wah", Rect(left_padding, top_padding, win_width, win_height)).fr
 w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 
 ~freq_slider = Slider(w, slider_dim_width@slider_dim_height)
-.value_(0.24)
+.background_(Color.black)
+.value_(0.22)
 .action_({ arg obj;
 	       var freq = obj.value.linlin(0,1,400,1600).round(1);
 	       x.set(\freq, freq);
@@ -51,7 +52,6 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .align_(\center);
 )
 
-s.record;
 
 
 
