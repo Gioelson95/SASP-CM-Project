@@ -1,6 +1,6 @@
 s.boot;
 
-b = Buffer.read(s,"/Users/gioelepozzi/Desktop/SASP-CM-Project/AudioSamples/NOTE.aif");
+b = Buffer.read(s,"/Users/alessandro/Desktop/WAHWAH.aif");
 
 //wahwah -> bandpass filterwith resonant peak at its low-pass roll-off frequency
 
@@ -12,9 +12,10 @@ SynthDef.new("wahwah",
 		var signal = PlayBuf.ar(2, b.bufnum);
 		//var signal = In.ar(2);
 
-		var outputHPF = HPF.ar(in:signal,freq:freq);
-		var outputRHPF = RHPF.ar(in:outputHPF,freq:freq,rq:2);
-		var output = LPF.ar(in:outputRHPF,freq:freq);
+		var outputFreqBoost = BPeakEQ.ar(signal, freq: freq, rq: 0.58, db: 22, mul: 1, add: 0);
+		var outputHPF = HPF.ar(in:signal,freq:freq*0.8);
+		var outputLPF = LPF.ar(in:outputHPF,freq:freq*1.6);
+		var output = outputLPF + outputLPF.distort*0.25;
 
 		Out.ar([0,1], channelsArray:output);
     }).send;
@@ -38,9 +39,9 @@ w = Window("Wah-Wah", Rect(left_padding, top_padding, win_width, win_height)).fr
 w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 
 ~freq_slider = Slider(w, slider_dim_width@slider_dim_height)
-.value_(0.5)
+.value_(0.24)
 .action_({ arg obj;
-	       var freq = obj.value.linlin(0,1,450,1600).round(1);
+	       var freq = obj.value.linlin(0,1,400,1600).round(1);
 	       x.set(\freq, freq);
            });
 
@@ -50,7 +51,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .align_(\center);
 )
 
-
+s.record;
 
 
 
