@@ -1,6 +1,8 @@
 s.boot;
+o = s.options;
+o.memSize = 2.pow(16);
 
-b = Buffer.read(s,"/Users/alessandro/Desktop/CLEAN.aif");
+b = Buffer.read(s,"/Users/alessandro/Desktop/CHORUS.aif");
 
 (
 SynthDef.new("stereo_delay",
@@ -13,11 +15,12 @@ SynthDef.new("stereo_delay",
 		tone = 2500,   // tone, low pass filter, range: 1Khz - 6Khz
 
 		// chorus parameters
-		mix = 0.75,   // mix btw signal and chorus, range: 0 - 1
-		rate = 10,    // speed of the modulation, range: 1hz - 20hz
-		depth = 0.5,  // amount of modulation, range: 0 - 1
+		mix = 0,   // mix btw signal and chorus, range: 0 - 1
+		rate = 0.3,    // speed of the modulation, range: 0hz - 1hz
+		depth = 0.5,  // amount of modulation, range: 0.25 - 1 (7ms - 28ms)
 
 		// reverb parameters
+		reverb = 1,
 		blend = 0.3,   // mix btw signal and reverb, range: 0 - 1
 		presence = 6500,  // brightness of the reverb, range: 1Khz - 8Khz
 		decay = 10;   // time decay, range: 1 - 20
@@ -26,16 +29,17 @@ SynthDef.new("stereo_delay",
 		var signal = PlayBuf.ar(2, b.bufnum);
 
 		// chorus
-		var lfo = SinOsc.kr(freq:rate); // lfo oscillator
-		var emphasis = BLowShelf.ar(signal, freq: 410, rs: 0.7, db: 15);  // emphasis filter
-		var bbd = DelayL.ar(emphasis,1,depth*lfo);  // modulation
-		var de_emphasis = BLowShelf.ar(signal, freq: 410, rs: 0.7, db: -15); // de-emphasis filter
-
-		var chorus_output = signal + mix*de_emphasis;   // mix
+		var chorus_input = LPF.ar(signal, 4000);
+		var lfo_left = (SinOsc.ar(rate) + 1);  // left oscillator
+		var lfo_right = (SinOsc.ar(rate,2) + 1);  // right oscillator
+		var min_delay = 0.007;
+		var max_delay = 0.028*depth;
+		var wet_left = DelayC.ar(chorus_input, 1, lfo_left.linlin(0, 2, min_delay, max_delay));
+		var wet_right = DelayC.ar(chorus_input, 1, lfo_right.linlin(0, 2, min_delay, max_delay));
+		var chorus_output = (signal) + ([wet_left, wet_right]*mix);   // mix
 
 		// delay
-		// control the input, direct of from the chorus output if it's enabled
-		var delay_input = if (~chorus_switch.value == 1,{ chorus_output },{ signal });
+		var delay_input = chorus_output;
 
 		var time_quarter = 60/bpm;  // delay 1/4 after the note
 		var time_octave = 60/(2*bpm);  // delay 1/8 after the note
@@ -62,7 +66,8 @@ SynthDef.new("stereo_delay",
 		var reverb_output = reverb_input + blend*refl;
 
 		// output of the effects
-		var output = if (~reverb_switch.value == 1, { reverb_output },{ delay_output });
+		var output = delay_output;
+		//if (reverb == 1, { reverb_output },{ delay_output });
 
 		Out.ar(0, output);
     }).send;
@@ -96,21 +101,21 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 ~time_knob = Knob(w, knob_dim@knob_dim)
 .value_(0.375)
 .action_({ arg obj;
-	       var bpm = obj.value.linexp(0,1,40,200).round(1);
+	       var bpm = obj.value.linlin(0,1,40,200).round(1);
 	       x.set(\bpm, bpm);
            });
 
 ~feedback_knob = Knob(w, knob_dim@knob_dim)
 .value_(0.5)
 .action_({ arg obj;
-	       var rep = obj.value.linexp(0,1,1,8).round(1);
+	       var rep = obj.value.linlin(0,1,0,8).round(1);
 	       x.set(\rep, rep);
            });
 
 ~tone_knob = Knob(w, knob_dim@knob_dim)
-.value_(0.3)
+.value_(0.25)
 .action_({ arg obj;
-	       var tone = obj.value.linexp(0,1,1000,7000).round(0.01);
+	       var tone = obj.value.linlin(0,1,1000,7000).round(0.01);
 	       x.set(\tone, tone);
            });
 
@@ -142,27 +147,36 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 // chorus controls
 
 ~chorus_switch = Button(w, knob_dim@30)
-.states_([ ["CHORUS", Color.white, Color.gray],["CHORUS", Color.white, Color.red] ])
-.font_(Font("Monaco",18));
+.states_([ ["CHORUS", Color.white, Color.gray], ["CHORUS", Color.white, Color.red] ])
+.font_(Font("Monaco",18))
+.action_({ arg obj;
+	       if( obj.value == 1,
+		        {x.set(\mix, ~mix_knob.value);
+		        ~mix_knob.enabled_(true);},
+
+	            {x.set(\mix, 0);
+		        ~mix_knob.enabled_(false);} );
+           });
 
 ~mix_knob = Knob(w, knob_dim@knob_dim)
-.value_(0.75)
+.enabled_(false)
+.value_(0.6)
 .action_({ arg obj;
 	       var mix = obj.value.round(0.01);
 	       x.set(\mix, mix);
            });
 
 ~rate_knob = Knob(w, knob_dim@knob_dim)
-.value_(0.5)
+.value_(0.3)
 .action_({ arg obj;
-	       var rate = obj.value.linexp(0,1,1,20).round(0.01);
+	       var rate = obj.value.round(0.001);
 	       x.set(\rate, rate);
            });
 
 ~depth_knob = Knob(w, knob_dim@knob_dim)
-.value_(0.5)
+.value_(0.625)
 .action_({ arg obj;
-	       var depth = obj.value.round(0.01);
+	       var depth = obj.value.obj.value.linlin(0,1,0.25,1).round(0.01);
 	       x.set(\depth, depth);
            });
 
@@ -190,7 +204,10 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 
 ~reverb_switch = Button(w, knob_dim@30)
 .states_([ ["REVERB", Color.white, Color.gray],["REVERB", Color.white, Color.red] ])
-.font_(Font("Monaco",18));
+.font_(Font("Monaco",18))
+.action_({ arg obj;
+	       if( obj.value == 1, {x.set(\reverb, 1);}, {x.set(\reverb, 0);} );
+           });
 
 ~blend_knob = Knob(w, knob_dim@knob_dim)
 .value_(0.3)
@@ -202,14 +219,14 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 ~presence_knob = Knob(w, knob_dim@knob_dim)
 .value_(0.9)
 .action_({ arg obj;
-	       var presence = obj.value.linexp(0,1,1000,8000).round(0.01);
+	       var presence = obj.value.linlin(0,1,1000,8000).round(0.01);
 	       x.set(\presence, presence);
            });
 
 ~decay_knob = Knob(w, knob_dim@knob_dim)
 .value_(0.5)
 .action_({ arg obj;
-	       var decay = obj.value.linexp(0,1,1,20).round(0.01);
+	       var decay = obj.value.linlin(0,1,1,20).round(0.01);
 	       x.set(\decay, decay);
            });
 
