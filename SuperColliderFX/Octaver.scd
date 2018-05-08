@@ -2,9 +2,10 @@ s.boot;
 
 // simulation of an Electro Harmonix Micro Pog
 
-b = Buffer.read(s,"/Users/lucavilla/Desktop/NOTE.aif");
+b = Buffer.read(s,"/Users/alessandro/Desktop/NOTE.aif");
 //"/Users/lucavilla/Desktop/NOTE.aif"
-//"/Users/lucavilla/Desktop/CLEAN.aif
+//"/Users/lucavilla/Desktop/CLEAN.aif"
+
 (
 SynthDef.new("octaver",
 	{
@@ -13,8 +14,8 @@ SynthDef.new("octaver",
 		oc_down_level = 0.5,     // level of first octave below, range 0 - 1
 		oc_up_level = 0.5;     // level of second octave below, range 0 - 1
 
-		var signal = PlayBuf.ar(1, b.bufnum);
-		var signal_oc_down = PitchShift.ar(in:signal,windowSize:0.001,pitchRatio:0.5,mul:oc_down_level+1);
+		var signal = PlayBuf.ar(2, b.bufnum);
+		var signal_oc_down = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.5,mul:oc_down_level*1.5);
 		var signal_oc_up = BBandPass.ar(in:signal,freq:1720,mul:oc_up_level);
 		var output = signal*direct_level + LPF.ar(signal_oc_down,440) + signal_oc_up;
 		Out.ar([0,1], output);
