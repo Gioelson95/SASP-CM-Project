@@ -2,8 +2,9 @@ s.boot;
 
 // simulation of an Electro Harmonix Micro Pog
 
-b = Buffer.read(s,"/Users/alessandro/Desktop/NOTE.aif");
-
+b = Buffer.read(s,"/Users/lucavilla/Desktop/NOTE.aif");
+//"/Users/lucavilla/Desktop/NOTE.aif"
+//"/Users/lucavilla/Desktop/CLEAN.aif
 (
 SynthDef.new("octaver",
 	{
@@ -12,31 +13,26 @@ SynthDef.new("octaver",
 		oc_down_level = 0.5,     // level of first octave below, range 0 - 1
 		oc_up_level = 0.5;     // level of second octave below, range 0 - 1
 
-		//var signal = In.ar(2);  // input signal from the audio interface
-		var signal = PlayBuf.ar(2, b.bufnum);
-
-		var signal_oc_down = PitchShift.ar(in:signal,windowSize:0.2,pitchRatio:0.5,mul:oc_down_level);
-		var oc_down = LPF.ar(signal_oc_down, 440)*2;
-
-		var signal_oc_up = LPF.ar(signal)
-		var oc_up = PitchShift.ar(in:signal,windowSize:0.2,pitchRatio:2,mul:oc_up_level);
-		var output = signal*direct_level + signal_oc_down + signal_oc_up;
-
+		var signal = PlayBuf.ar(1, b.bufnum);
+		var signal_oc_down = PitchShift.ar(in:signal,windowSize:0.001,pitchRatio:0.5,mul:oc_down_level+1);
+		var signal_oc_up = BBandPass.ar(in:signal,freq:1720,mul:oc_up_level);
+		var output = signal*direct_level + LPF.ar(signal_oc_down,440) + signal_oc_up;
 		Out.ar([0,1], output);
     }).send;
 )
 
 x = Synth("octaver");
 
+
 (
 var screen_width = Window.screenBounds.width;
 var screen_height = Window.screenBounds.height;
-var win_width = 640;
-var win_height = 280;
+var win_width = 510;
+var win_height = 240;
 var left_padding = (screen_width-win_width)/2;
 var top_padding = (screen_height-win_height)/2;
 
-var knob_dim = 180;
+var knob_dim = 140;
 
 w = Window("Octaver", Rect(left_padding, top_padding, win_width, win_height)).front;
 w.background = Color.red;
