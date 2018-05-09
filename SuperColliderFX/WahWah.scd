@@ -1,6 +1,6 @@
 s.boot;
 
-b = Buffer.read(s,"/Users/alessandro/Desktop/WAHWAH.aif");
+b = Buffer.read(s,"/Users/lucavilla/Desktop/CLEAN.aif");
 
 //wahwah -> bandpass filterwith resonant peak at its low-pass roll-off frequency
 
@@ -15,7 +15,7 @@ SynthDef.new("wahwah",
 		var outputFreqBoost = BPeakEQ.ar(signal, freq: freq, rq: 0.58, db: 12, mul: 1, add: 0);
 		var outputHPF = HPF.ar(in:outputFreqBoost,freq:freq*0.8);
 		var outputLPF = LPF.ar(in:outputHPF,freq:freq*1.6);
-		var output = outputLPF;
+		var output = outputLPF + outputLPF.distort*0.25;
 
 		Out.ar([0,1], channelsArray:output);
     }).send;
