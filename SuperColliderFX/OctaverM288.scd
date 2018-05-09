@@ -2,7 +2,7 @@ s.boot;
 
 // simulation of a MXR M288
 
-b = Buffer.read(s,"/Users/lucavilla/Desktop/CLEAN.aif");
+b = Buffer.read(s,"/Users/gioelepozzi/Desktop/SASP-CM-Project/AudioSamples/CLEAN.aif");
 
 (
 SynthDef.new("octaverM288",
