@@ -79,14 +79,15 @@ x = Synth("stereo_delay");
 var screen_width = Window.screenBounds.width;
 var screen_height = Window.screenBounds.height;
 var win_width = 580;
-var win_height = 580;
+var win_height = 600;
 var left_padding = (screen_width-win_width)/2;
 var top_padding = (screen_height-win_height)/2;
 
 var knob_dim = 120;
 
-w = Window("Stereo Digital Delay", Rect(left_padding, top_padding, win_width, win_height)).front;
-w.background = Color.blue;
+w = Window("Stereo Digital Delay", Rect(left_padding, top_padding, win_width, win_height));
+w.front;
+w.background_(Color.blue);
 w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 
 // delay controls
@@ -96,6 +97,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .action_({ arg obj;
 	       var level = obj.value.round(0.01);
 	       x.set(\level, level);
+	       ~level_text.string_(20*log(level).round(0.01)+"dB");
            });
 
 ~time_knob = Knob(w, knob_dim@knob_dim)
@@ -103,6 +105,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .action_({ arg obj;
 	       var bpm = obj.value.linlin(0,1,40,200).round(1);
 	       x.set(\bpm, bpm);
+	       ~time_text.value_(bpm);
            });
 
 ~feedback_knob = Knob(w, knob_dim@knob_dim)
@@ -110,6 +113,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .action_({ arg obj;
 	       var rep = obj.value.linlin(0,1,0,8).round(1);
 	       x.set(\rep, rep);
+	       ~feedback_text.string_(rep+"Repetitions");
            });
 
 ~tone_knob = Knob(w, knob_dim@knob_dim)
@@ -117,28 +121,69 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .action_({ arg obj;
 	       var tone = obj.value.linlin(0,1,1000,7000).round(0.01);
 	       x.set(\tone, tone);
+	       ~tone_text.string_(tone+"Hz");
            });
 
 
-~level_label = StaticText(w, knob_dim@30)
+~level_text = StaticText(w, knob_dim@14)
+.string_(20*log(~level_knob.value).round(0.01)+"dB")
+.font_(Font("Monaco",14))
+.stringColor_(Color.white)
+.align_(\center);
+
+~time_text = NumberBox(w, 60@14)
+.value_(100)
+.clipLo_(40)
+.clipHi_(200)
+.font_(Font("Monaco",14))
+.normalColor_(Color.black)
+.stringColor_(Color.black)
+.typingColor_(Color.black)
+.align_(\center)
+.background_(Color.white)
+.buttonsVisible_(false)
+.action_({ arg obj;
+	       ~time_knob.valueAction_(obj.value.linlin(40,200,0,1));
+          });
+~blank_label = StaticText(w, 40@14)
+.string_("BPM")
+.font_(Font("Monaco",14))
+.stringColor_(Color.white)
+.align_(\left);
+
+~feedback_text = StaticText(w, knob_dim@14)
+.string_(~feedback_knob.value.linlin(0,1,0,8)+"Repetitions")
+.font_(Font("Monaco",14))
+.stringColor_(Color.white)
+.align_(\center);
+
+~tone_text = StaticText(w, knob_dim@14)
+.string_(~tone_knob.value.linlin(0,1,1000,7000)+"Hz")
+.font_(Font("Monaco",14))
+.stringColor_(Color.white)
+.align_(\center);
+
+
+
+~level_label = StaticText(w, knob_dim@20)
 .string_("LEVEL")
 .font_(Font("Monaco",20))
 .stringColor_(Color.white)
 .align_(\center);
 
-~time_label = StaticText(w, knob_dim@30)
+~time_label = StaticText(w, knob_dim@20)
 .string_("TIME")
 .font_(Font("Monaco",20))
 .stringColor_(Color.white)
 .align_(\center);
 
-~feedback_label = StaticText(w, knob_dim@30)
+~feedback_label = StaticText(w, knob_dim@20)
 .string_("FEEDBACK")
 .font_(Font("Monaco",20))
 .stringColor_(Color.white)
 .align_(\center);
 
-~tone_label = StaticText(w, knob_dim@30)
+~tone_label = StaticText(w, knob_dim@20)
 .string_("TONE")
 .font_(Font("Monaco",20))
 .stringColor_(Color.white)
@@ -206,10 +251,16 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .states_([ ["REVERB", Color.white, Color.gray],["REVERB", Color.white, Color.red] ])
 .font_(Font("Monaco",18))
 .action_({ arg obj;
-	       if( obj.value == 1, {x.set(\reverb, 1);}, {x.set(\reverb, 0);} );
+	       if( obj.value == 1,
+		        {x.set(\blend, ~blend_knob.value);
+		        ~blend_knob.enabled_(true);},
+
+	            {x.set(\blend, 0);
+		        ~blend_knob.enabled_(false);} );
            });
 
 ~blend_knob = Knob(w, knob_dim@knob_dim)
+.enabled_(false)
 .value_(0.3)
 .action_({ arg obj;
 	       var blend = obj.value.round(0.01);
