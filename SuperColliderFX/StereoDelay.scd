@@ -20,10 +20,9 @@ SynthDef.new("stereo_delay",
 		depth = 0.5,  // amount of modulation, range: 0.25 - 1 (7ms - 28ms)
 
 		// reverb parameters
-		reverb = 1,
 		blend = 0.3,   // mix btw signal and reverb, range: 0 - 1
 		presence = 6500,  // brightness of the reverb, range: 1Khz - 8Khz
-		decay = 10;   // time decay, range: 1 - 20
+		decay = 0.5;   // time decay, range: 0 - 1
 
 		//var signal = In.ar(2);   // input signal from the audio interface
 		var signal = PlayBuf.ar(2, b.bufnum);
@@ -53,23 +52,14 @@ SynthDef.new("stereo_delay",
 		var delay_output = delay_input + stereo_delay;
 
 		// reverb
-		var reverb_input = delay_output;   // take the input
+		var reverb_input = delay_output;
 		var input_lp = LPF.ar(reverb_input, presence);   // control brigthness
-		var pre_delayed = DelayN.ar(input_lp, 0.1, 0.048);  // predelay
 
-		// reflections
-		var early_refl = Mix.ar(Array.fill(7,
-			            { CombL.ar(pre_delayed, 0.05, rrand(0.03, 0.05),decay) }));
-		var refl;
-		var r = 6.do{ refl = AllpassN.ar(early_refl, 0.050, rrand(0.03, 0.05), decay/15) };
+		var reverb_output = (FreeVerb2.ar(input_lp[0], input_lp[1], 1, decay)*blend) +
+		                    (reverb_input*(1 - blend));  // reverb and blend
 
-		var reverb_output = reverb_input + blend*refl;
-
-		// output of the effects
-		var output = delay_output;
-		//if (reverb == 1, { reverb_output },{ delay_output });
-
-		Out.ar(0, output);
+		Out.ar( 0, reverb_output);
+		//Out.ar(0, delay_output);
     }).send;
 )
 
@@ -277,7 +267,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 ~decay_knob = Knob(w, knob_dim@knob_dim)
 .value_(0.5)
 .action_({ arg obj;
-	       var decay = obj.value.linlin(0,1,1,20).round(0.01);
+	       var decay = obj.value.round(0.01);
 	       x.set(\decay, decay);
            });
 
