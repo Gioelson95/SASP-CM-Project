@@ -1,6 +1,6 @@
 s.boot;
 o = s.options;
-o.memSize = 2.pow(16);
+o.memSize = 2.pow(32);
 
 b = Buffer.read(s,"/Users/alessandro/Desktop/CHORUS.aif");
 
@@ -15,16 +15,16 @@ SynthDef.new("stereo_delay",
 		tone = 2500,   // tone, low pass filter, range: 1Khz - 6Khz
 
 		// chorus parameters
-		mix = 0,   // mix btw signal and chorus, range: 0 - 1
+		mix = 0.6,   // mix btw signal and chorus, range: 0 - 1
 		rate = 0.3,    // speed of the modulation, range: 0hz - 1hz
 		depth = 0.5,  // amount of modulation, range: 0.25 - 1 (7ms - 28ms)
 
 		// reverb parameters
 		blend = 0.3,   // mix btw signal and reverb, range: 0 - 1
 		presence = 6500,  // brightness of the reverb, range: 1Khz - 8Khz
-		decay = 0.5;   // time decay, range: 0 - 1
+		decay = 10;   // time decay, range: 0 - 20
 
-		//var signal = In.ar(2);   // input signal from the audio interface
+		//var signal = In.ar(1);   // input signal from the audio interface
 		var signal = PlayBuf.ar(2, b.bufnum);
 
 		// chorus
@@ -53,12 +53,21 @@ SynthDef.new("stereo_delay",
 
 		// reverb
 		var reverb_input = delay_output;
-		var input_lp = LPF.ar(reverb_input, presence);   // control brigthness
+		var modulator = SinOsc.ar(0.3).linlin(-1,1,0,1.3);
+		var delrd = LocalIn.ar(4);
+		var reverb_output = reverb_input + delrd[[0,1]];
+		var deltimes = [101, 143, 165, 177] * 0.001 - ControlDur.ir;
+		var sig = [reverb_output[0]+reverb_output[1],
+			       reverb_output[0]-reverb_output[1],
+			       delrd[2]+delrd[3],
+			       delrd[2]-delrd[3]];
+	    sig = [ sig[0]+sig[2], sig[1]+sig[3], sig[0]-sig[2], sig[1]-sig[3] ];
+		sig = sig * [0.4, 0.37, 0.333, 0.3];
 
-		var reverb_output = (FreeVerb2.ar(input_lp[0], input_lp[1], 1, decay)*blend) +
-		                    (reverb_input*(1 - blend));  // reverb and blend
 
-		Out.ar( 0, reverb_output);
+		LocalOut.ar(DelayC.ar(sig, deltimes, deltimes));
+
+		Out.ar(0, reverb_output);
 		//Out.ar(0, delay_output);
     }).send;
 )
@@ -294,8 +303,9 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 )
 
 
-
-
+ServerOptions.outDevices
+o = Server.local.options
+o.outDevice = "Soundflower (2ch)";
 
 
 
