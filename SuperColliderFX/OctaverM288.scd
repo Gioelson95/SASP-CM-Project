@@ -2,7 +2,7 @@ s.boot;
 
 // simulation of a MXR M288
 
-b = Buffer.read(s,"/Users/gioelepozzi/Desktop/SASP-CM-Project/AudioSamples/CLEAN.aif");
+b = Buffer.read(s,"/Users/lucavilla/Desktop/CLEAN.aif");
 
 (
 SynthDef.new("octaverM288",
@@ -13,12 +13,14 @@ SynthDef.new("octaverM288",
 		girth_level = 0.5,    // level of second octave below, range 0 - 1
 		mid_plus_switch = 0;   // select if mid+ switch is clicked, 1 if it is clicked, 0 otherwise
 
-		//var signal = PlayBuf.ar(2, b.bufnum)*0.6; //the multiplicative factor is to not exceeded 0dB in output
-		var signal = In.ar(2);
+		var signal = PlayBuf.ar(2, b.bufnum)*0.6; //the multiplicative factor is to not exceeded 0dB in output
+		//var signal = In.ar(2);
 		var signal_octave = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.5);
 		var signal_octave_LPF = LPF.ar(in: signal_octave,freq:220);
-		var growl_signal = BBandPass.ar(in:signal_octave,freq:200,bw:3,mul:growl_level*2);
-		var girth_signal = BBandPass.ar(in:signal_octave,freq:100,bw:3,mul:girth_level*1.5);
+		var growl_signal = BPF.ar(in:signal_octave,freq:200,rq:3,mul:growl_level*2);
+		var girth_signal = BPF.ar(in:signal_octave,freq:100,rq:3,mul:girth_level*1.5);
+
+
 		var mid_plus_signal = BPeakEQ.ar(in:signal,freq:400,rq:2,db:10,mul:mid_plus_switch);
 		var output = (signal*(1-mid_plus_switch) + mid_plus_signal)*dry_level + growl_signal + girth_signal;
 
@@ -50,7 +52,12 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .font_(Font("Monaco",18))
 .action_({arg obj;
 	      if( obj.value == 1,
-		        {x = Synth("octaverM288");},
+		        {x = Synth("octaverM288");
+			     x.set(\dry_level,~dry_level_knob.value.round(0.01));
+				 x.set(\growl_level,~growl_level_knob.value.round(0.01));
+				 x.set(\girth_level,~girth_level_knob.value.round(0.01));
+				 x.set(\mid_plus_switch,~mid_plus_button.value);
+		        },
 	            {x.free;}
 	        );});
 

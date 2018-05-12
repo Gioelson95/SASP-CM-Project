@@ -12,10 +12,10 @@ SynthDef.new("octaverOC2",
 		oc1_level = 0.5,     // level of first octave below, range 0 - 1
 		oc2_level = 0.5;     // level of second octave below, range 0 - 1
 
-		//var signal = PlayBuf.ar(2, b.bufnum);
-		var signal = In.ar(2);
+		var signal = PlayBuf.ar(2, b.bufnum);
+		//var signal = In.ar(2);
 		var signal_oc1 = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.5,mul:oc1_level*1.5);
-		var signal_oc2 = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.2,mul:oc2_level);
+		var signal_oc2 = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.25,mul:oc2_level*2);
 
 
 		var output = signal*direct_level + LPF.ar(signal_oc1,440) + LPF.ar(signal_oc2,220);
