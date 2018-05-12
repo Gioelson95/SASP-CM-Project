@@ -687,44 +687,4 @@ w.view.decorator.nextLine;
 .stringColor_(label_color)
 .align(\center);
 
-
-
-/////////////////// BTN ///////////////////
-
-/*
-~on_off_wahwah = Button(k,120@40)
-.states_([ ["OFF Wah-Wah", Color.white, Color.red], ["ON Wah-Wah", Color.white, Color.green] ])
-.font_(Font("Monaco",15))
-.action_({arg obj;
-	      if( obj.value == 1,
-		        {f = Synth("wahwah");
-			       ~freq_slider.enabled_(true);
-		        },
-	            {f.free;
-			       ~freq_slider.enabled_(false);
-			       ~freq_slider.value_(0.22);
-		        }
-	        );});
-
-~on_off_OctaverOC2 = Button(s,120@40)
-.states_([ ["OFF Octaver", Color.white, Color.red], ["ON Octaver", Color.white, Color.green] ])
-.font_(Font("Monaco",15))
-.action_({arg obj;
-	      if( obj.value == 1,
-		        {y = Synth("octaverOC2");
-			       ~direct_level_knob.enabled_(true);
-			       ~oc1_level_knob.enabled_(true);
-			       ~oc2_level_knob.enabled_(true);
-		           },
-	            {y.free;
-			       ~direct_level_knob.enabled_(false);
-			       ~direct_level_knob.value_(0.5);
-			       ~oc1_level_knob.enabled_(false);
-			       ~oc1_level_knob.value_(0.5);
-			       ~oc2_level_knob.enabled_(false);
-			       ~oc2_level_knob.value_(0.5);
-		          }
-	        );});
-*/
-//////////////////
 )
