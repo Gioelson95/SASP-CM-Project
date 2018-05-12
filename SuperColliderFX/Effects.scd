@@ -163,7 +163,8 @@ var label_size = 15;
 var label_color = Color.white;
 
 // Button parameters
-var button_dim = 80;
+var button_width = 80;
+var button_height = 30;
 
 // Initialization of main window
 Window.closeAll;
@@ -175,7 +176,7 @@ w.background_(win_color);
 /////////////////// SETTINGS ///////////////////
 
 ~settings_view = CompositeView(parent:w, bounds:810@200)
-.background_(Color.red)
+.background_(Color.blue)
 .decorator_(FlowLayout(bounds:w.bounds, margin:20@20, gap:10@10));
 
 ~settings_label = StaticText(parent:~settings_view, bounds:Rect(width:80,height:20))
@@ -183,6 +184,89 @@ w.background_(win_color);
 .font_(Font(name:label_font,size:label_size))
 .stringColor_(label_color)
 .align_(\center);
+
+~settings_view.decorator.nextLine;
+
+~on_off_wahwah = Button(~settings_view,(button_width+30)@button_height)
+.states_([ ["OFF Wah-Wah", Color.white, Color.grey], ["ON Wah-Wah", Color.white, Color.red] ])
+.font_(Font(label_font,label_size))
+.action_({arg obj;
+	if( obj.value == 1,
+		{~synth_wahwah = Synth("wahwah");
+			~freq_slider.enabled_(true);
+		},
+		{~synth_wahwah.free;
+			~freq_slider.enabled_(false);
+			~freq_slider.value_(slider_initial_value);
+		}
+);});
+
+
+~on_off_OctaverOC2 = Button(~settings_view,(button_width+60)@button_height)
+.states_([ ["OFF OctaverOC2", Color.white, Color.grey], ["ON OctaverOC2", Color.white, Color.red] ])
+.font_(Font("Monaco",15))
+.action_({arg obj;
+	if( obj.value == 1,
+		{~synth_octaverOC2 = Synth("octaverOC2");
+			~direct_level_knob.enabled_(true);
+			~oc1_level_knob.enabled_(true);
+			~oc2_level_knob.enabled_(true);
+		},
+		{~synth_octaverOC2.free;
+			~direct_level_knob.enabled_(false);
+			~direct_level_knob.value_(knob_inital_value);
+			~oc1_level_knob.enabled_(false);
+			~oc1_level_knob.value_(knob_inital_value);
+			~oc2_level_knob.enabled_(false);
+			~oc2_level_knob.value_(knob_inital_value);
+		}
+);});
+
+~on_off_OctaverM288 = Button(~settings_view,(button_width+60)@button_height)
+.states_([ ["OFF OctaverM288", Color.white, Color.grey], ["ON OctaverM288", Color.white, Color.red] ])
+.font_(Font(label_font,label_size))
+.action_({arg obj;
+	if( obj.value == 1,
+		{~synth_octaverM288 = Synth("octaverM288");
+			~dry_level_knob.enabled_(true);
+			~growl_level_knob.enabled_(true);
+			~girth_level_knob.enabled_(true);
+		},
+		{~synth_octaverM288.free;
+			~dry_level_knob.enabled_(false);
+			~dry_level_knob.value_(knob_inital_value);
+			~growl_level_knob.enabled_(false);
+			~growl_level_knob.value_(knob_inital_value);
+			~girth_level_knob.enabled_(false);
+			~girth_level_knob.value_(knob_inital_value);
+		}
+);});
+
+~on_off_stereoDelay = Button(~settings_view,(button_width+70)@button_height)
+.states_([ ["OFF Stereo Delay", Color.white, Color.grey], ["ON Stereo Delay", Color.white, Color.red] ])
+.font_(Font(label_font,label_size))
+.action_({arg obj;
+	if( obj.value == 1,
+		{~synth_stereoDelay = Synth("stereoDelay");
+			~level_knob.enabled_(true);
+			~time_knob.enabled_(true);
+			~feedback_knob.enabled_(true);
+			~tone_knob.enabled_(true);
+			~time_text.enabled_(true);
+		},
+		{~synth_stereoDelay.free;
+			~level_knob.enabled_(false);
+			~level_knob.value_(0.3);
+			~time_knob.enabled_(false);
+			~time_knob.value_(0.375);
+			~feedback_knob.enabled_(false);
+			~feedback_knob.value_(knob_inital_value);
+			~tone_knob.enabled_(false);
+			~tone_knob.value_(0.25);
+			~time_text.enabled_(false);
+			~time_text.value_(100);
+		}
+);});
 
 w.view.decorator.nextLine;
 
@@ -204,7 +288,7 @@ w.view.decorator.nextLine;
 // Slider for the WahWah effect
 ~freq_slider = Slider(parent:~wahwah_view, bounds:Rect(width:slider_width,height:slider_height))
 .thumbSize_(pixels:slider_size)
-.enabled_(true)  //TO CHANGE
+.enabled_(false)
 .value_(slider_initial_value)
 .background_(slider_color)
 .action_({
@@ -238,6 +322,7 @@ w.view.decorator.nextLine;
 
 ~direct_level_knob = Knob(~octaverOC2_view, knob_dim@knob_dim)
 .value_(knob_inital_value)
+.enabled_(false)
 .action_({ arg obj;
 	var direct_level = obj.value.round(0.01);
 	~synth_octaverOC2.set(\direct_level, direct_level);
@@ -245,6 +330,7 @@ w.view.decorator.nextLine;
 
 ~oc1_level_knob = Knob(~octaverOC2_view, knob_dim@knob_dim)
 .value_(knob_inital_value)
+.enabled_(false)
 .action_({ arg obj;
 	var oc1_level = obj.value.round(0.01);
 	~synth_octaverOC2.set(\oc1_level, oc1_level);
@@ -252,6 +338,7 @@ w.view.decorator.nextLine;
 
 ~oc2_level_knob = Knob(~octaverOC2_view, knob_dim@knob_dim)
 .value_(knob_inital_value)
+.enabled_(false)
 .action_({ arg obj;
 	var oc2_level = obj.value.round(0.01);
 	~synth_octaverOC2.set(\oc2_level, oc2_level);
@@ -292,7 +379,7 @@ w.view.decorator.nextLine;
 
 ~octaverM288_view.decorator.nextLine;
 
-~mid_plus_button = Button(~octaverM288_view,button_dim@button_dim)
+~mid_plus_button = Button(~octaverM288_view,button_width@button_height)
 .states_([ ["MID+", label_color, Color.gray], ["MID+", label_color, Color.red] ])
 .font_(Font(label_font,label_size))
 .value_(0)
@@ -304,6 +391,7 @@ w.view.decorator.nextLine;
 
 ~dry_level_knob = Knob(~octaverM288_view, knob_dim@knob_dim)
 .value_(knob_inital_value)
+.enabled_(false)
 .action_({ arg obj;
 	var dry_level = obj.value.round(0.01);
 	~synth_octaverM288.set(\dry_level, dry_level);
@@ -311,6 +399,7 @@ w.view.decorator.nextLine;
 
 ~growl_level_knob = Knob(~octaverM288_view, knob_dim@knob_dim)
 .value_(knob_inital_value)
+.enabled_(false)
 .action_({ arg obj;
 	var growl_level = obj.value.round(0.01);
 	~synth_octaverM288.set(\growl_level, growl_level);
@@ -318,6 +407,7 @@ w.view.decorator.nextLine;
 
 ~girth_level_knob = Knob(~octaverM288_view, knob_dim@knob_dim)
 .value_(knob_inital_value)
+.enabled_(false)
 .action_({ arg obj;
 	var girth_level = obj.value.round(0.01);
 	~synth_octaverM288.set(\girth_level, girth_level);
@@ -370,7 +460,7 @@ w.view.decorator.nextLine;
 .value_(0.3)
 .action_({ arg obj;
 	       var level = obj.value.round(0.01);
-	       x.set(\level, level);
+	       ~synth_stereoDelay.set(\level, level);
 	       ~level_text.string_(20*log(level).round(0.01)+"dB");
            });
 
@@ -378,7 +468,7 @@ w.view.decorator.nextLine;
 .value_(0.375)
 .action_({ arg obj;
 	       var bpm = obj.value.linlin(0,1,40,200).round(1);
-	       x.set(\bpm, bpm);
+	       ~synth_stereoDelay.set(\bpm, bpm);
 	       ~time_text.value_(bpm);
            });
 
@@ -386,15 +476,15 @@ w.view.decorator.nextLine;
 .value_(0.5)
 .action_({ arg obj;
 	       var rep = obj.value.linlin(0,1,0,8).round(1);
-	       x.set(\rep, rep);
-	       ~feedback_text.string_(rep+"Repetitions");
+	       ~synth_stereoDelay.set(\rep, rep);
+	       ~feedback_text.string_(rep+"Rep");
            });
 
 ~tone_knob = Knob(~stereoDelay_view, knob_dim@knob_dim)
 .value_(0.25)
 .action_({ arg obj;
 	       var tone = obj.value.linlin(0,1,1000,7000).round(0.01);
-	       x.set(\tone, tone);
+	       ~synth_stereoDelay.set(\tone, tone);
 	       ~tone_text.string_(tone+"Hz");
            });
 
@@ -402,15 +492,15 @@ w.view.decorator.nextLine;
 
 ~level_text = StaticText(~stereoDelay_view, knob_dim@14)
 .string_(20*log(~level_knob.value).round(0.01)+"dB")
-.font_(Font("Monaco",14))
-.stringColor_(Color.white)
+.font_(Font(label_font,label_size-4))
+.stringColor_(label_color)
 .align_(\center);
 
-~time_text = NumberBox(~stereoDelay_view, 60@14)
+~time_text = NumberBox(~stereoDelay_view, 35@14)
 .value_(100)
 .clipLo_(40)
 .clipHi_(200)
-.font_(Font("Monaco",14))
+.font_(Font(label_font,label_size-4))
 .normalColor_(Color.black)
 .stringColor_(Color.black)
 .typingColor_(Color.black)
@@ -422,84 +512,84 @@ w.view.decorator.nextLine;
           });
 ~blank_label = StaticText(~stereoDelay_view, 40@14)
 .string_("BPM")
-.font_(Font("Monaco",14))
+.font_(Font(label_font,label_size-4))
 .stringColor_(Color.white)
 .align_(\left);
 
 ~feedback_text = StaticText(~stereoDelay_view, knob_dim@14)
-.string_(~feedback_knob.value.linlin(0,1,0,8)+"Repetitions")
-.font_(Font("Monaco",14))
+.string_(~feedback_knob.value.linlin(0,1,0,8)+"Rep")
+.font_(Font(label_font,label_size-4))
 .stringColor_(Color.white)
 .align_(\center);
 
 ~tone_text = StaticText(~stereoDelay_view, knob_dim@14)
 .string_(~tone_knob.value.linlin(0,1,1000,7000)+"Hz")
-.font_(Font("Monaco",14))
-.stringColor_(Color.white)
+.font_(Font(label_font,label_size-4))
+.stringColor_(label_color)
 .align_(\center);
 
 ~stereoDelay_view.decorator.nextLine;
 
 ~level_label = StaticText(~stereoDelay_view, knob_dim@20)
 .string_("LEVEL")
-.font_(Font("Monaco",20))
-.stringColor_(Color.white)
+.font_(Font(label_font,label_size))
+.stringColor_(label_color)
 .align_(\center);
 
 ~time_label = StaticText(~stereoDelay_view, knob_dim@20)
 .string_("TIME")
-.font_(Font("Monaco",20))
-.stringColor_(Color.white)
+.font_(Font(label_font,label_size))
+.stringColor_(label_color)
 .align_(\center);
 
 ~feedback_label = StaticText(~stereoDelay_view, knob_dim@20)
 .string_("FEEDBACK")
-.font_(Font("Monaco",20))
-.stringColor_(Color.white)
+.font_(Font(label_font,label_size))
+.stringColor_(label_color)
 .align_(\center);
 
 ~tone_label = StaticText(~stereoDelay_view, knob_dim@20)
 .string_("TONE")
-.font_(Font("Monaco",20))
-.stringColor_(Color.white)
+.font_(Font(label_font,label_size))
+.stringColor_(label_color)
 .align_(\center);
 
 ~stereoDelay_view.decorator.nextLine;
 
 // chorus controls
 
-~chorus_switch = Button(~stereoDelay_view, knob_dim@30)
+~chorus_switch = Button(~stereoDelay_view, button_width@button_height)
 .states_([ ["CHORUS", Color.white, Color.gray], ["CHORUS", Color.white, Color.red] ])
-.font_(Font("Monaco",18))
+.font_(Font(label_font,label_size))
 .action_({ arg obj;
 	       if( obj.value == 1,
-		        {x.set(\mix, ~mix_knob.value);
+		        {~synth_stereoDelay.set(\mix, ~mix_knob.value);
 		        ~mix_knob.enabled_(true);},
 
-	            {x.set(\mix, 0);
+	            {~synth_stereoDelay.set(\mix, 0);
 		        ~mix_knob.enabled_(false);} );
            });
 
 ~mix_knob = Knob(~stereoDelay_view, knob_dim@knob_dim)
-.enabled_(false)
 .value_(0.6)
+.enabled_(false)
 .action_({ arg obj;
 	       var mix = obj.value.round(0.01);
-	       x.set(\mix, mix);
+	       ~synth_stereoDelay.set(\mix, mix);
            });
 
 ~rate_knob = Knob(~stereoDelay_view, knob_dim@knob_dim)
 .value_(0.3)
 .action_({ arg obj;
 	       var rate = obj.value.round(0.001);
-	       x.set(\rate, rate);
+	       ~synth_stereoDelay.set(\rate, rate);
            });
 
 ~depth_knob = Knob(~stereoDelay_view, knob_dim@knob_dim)
 .value_(0.625)
 .action_({ arg obj;
 	       var depth = obj.value.obj.value.linlin(0,1,0.25,1).round(0.01);
-	       x.set(\depth, depth);
+	       ~synth_stereoDelay.set(\depth, depth);
            });
 
 ~stereoDelay_view.decorator.nextLine;
@@ -508,35 +598,35 @@ w.view.decorator.nextLine;
 
 ~mix_label = StaticText(~stereoDelay_view, knob_dim@30)
 .string_("MIX")
-.font_(Font("Monaco",20))
-.stringColor_(Color.white)
+.font_(Font(label_font,label_size))
+.stringColor_(label_color)
 .align_(\center);
 
 ~rate_label = StaticText(~stereoDelay_view, knob_dim@30)
 .string_("RATE")
-.font_(Font("Monaco",20))
-.stringColor_(Color.white)
+.font_(Font(label_font,label_size))
+.stringColor_(label_color)
 .align_(\center);
 
 ~depth_label = StaticText(~stereoDelay_view, knob_dim@30)
 .string_("DEPTH")
-.font_(Font("Monaco",20))
-.stringColor_(Color.white)
+.font_(Font(label_font,label_size))
+.stringColor_(label_color)
 .align_(\center);
 
 ~stereoDelay_view.decorator.nextLine;
 
 // reverb controls
 
-~reverb_switch = Button(~stereoDelay_view, knob_dim@30)
+~reverb_switch = Button(~stereoDelay_view, button_width@button_height)
 .states_([ ["REVERB", Color.white, Color.gray],["REVERB", Color.white, Color.red] ])
-.font_(Font("Monaco",18))
+.font_(Font(label_font,label_size))
 .action_({ arg obj;
 	       if( obj.value == 1,
-		        {x.set(\blend, ~blend_knob.value);
+		        {~synth_stereoDelay.set(\blend, ~blend_knob.value);
 		        ~blend_knob.enabled_(true);},
 
-	            {x.set(\blend, 0);
+	            {~synth_stereoDelay.set(\blend, 0);
 		        ~blend_knob.enabled_(false);} );
            });
 
@@ -545,21 +635,21 @@ w.view.decorator.nextLine;
 .value_(0.3)
 .action_({ arg obj;
 	       var blend = obj.value.round(0.01);
-	       x.set(\blend, blend);
+	       ~synth_stereoDelay.set(\blend, blend);
            });
 
 ~presence_knob = Knob(~stereoDelay_view, knob_dim@knob_dim)
 .value_(0.9)
 .action_({ arg obj;
 	       var presence = obj.value.linlin(0,1,1000,8000).round(0.01);
-	       x.set(\presence, presence);
+	       ~synth_stereoDelay.set(\presence, presence);
            });
 
 ~decay_knob = Knob(~stereoDelay_view, knob_dim@knob_dim)
 .value_(0.5)
 .action_({ arg obj;
 	       var decay = obj.value.round(0.01);
-	       x.set(\decay, decay);
+	       ~synth_stereoDelay.set(\decay, decay);
            });
 
 ~stereoDelay_view.decorator.nextLine;
@@ -568,20 +658,20 @@ w.view.decorator.nextLine;
 
 ~blend_label = StaticText(~stereoDelay_view, knob_dim@30)
 .string_("BLEND")
-.font_(Font("Monaco",20))
-.stringColor_(Color.white)
+.font_(Font(label_font,label_size))
+.stringColor_(label_color)
 .align_(\center);
 
 ~presence_label = StaticText(~stereoDelay_view, knob_dim@30)
 .string_("PRESENCE")
-.font_(Font("Monaco",20))
-.stringColor_(Color.white)
+.font_(Font(label_font,label_size))
+.stringColor_(label_color)
 .align_(\center);
 
 ~decay_label = StaticText(~stereoDelay_view, knob_dim@30)
 .string_("DECAY")
-.font_(Font("Monaco",20))
-.stringColor_(Color.white)
+.font_(Font(label_font,label_size))
+.stringColor_(label_color)
 .align_(\center);
 
 /////////////////// KINECT ///////////////////
