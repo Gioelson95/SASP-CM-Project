@@ -140,11 +140,17 @@ b = Buffer.read(server:s, path:"/Users/gioelepozzi/Desktop/SASP-CM-Project/Audio
 // Main window parameters
 var screen_width = Window.screenBounds.width;
 var screen_height = Window.screenBounds.height;
-var win_width = 850;
-var win_height = 950;
+var win_width = 0.59*screen_width;
+var win_height = 0.91*screen_height;
 var left_pad = (screen_width - win_width)/2;
 var top_pad = (screen_height - win_height)/2;
 var win_color = Color(red:224, green:224, blue:224);  // Classic light grey
+var win_margin = 0.01*screen_width;
+var win_gap = 0.006*screen_width;
+
+// Composite view parameters
+var comp_view_margin = win_margin;
+var comp_view_gap = win_gap;
 
 // Knob parameters
 var knob_dim = 80;
@@ -158,114 +164,75 @@ var slider_initial_value = 0.22;
 var slider_color = Color.black;
 
 // Label parameters
-var label_font = "Monaco";
-var label_size = 15;
-var label_color = Color.white;
+var label_height = 20;
+
+// Font parameters
+var font_type = "Monaco";
+var font_size = 15;
+var font_color = Color.white;
 
 // Button parameters
 var button_width = 80;
 var button_height = 30;
+var button_on_color = Color.red;
+var button_off_color = Color.grey;
 
 // Initialization of main window
 Window.closeAll;
-w = Window(name:"Effects", bounds:Rect(left:left_pad, top:top_pad, width:win_width, height:win_height),resizable:true, border:true, server:s, scroll:false);
+w = Window(name:"Effects", bounds:Rect(left:left_pad, top:top_pad, width:win_width, height:win_height),resizable:true, border:true, server:s, scroll:true);
 w.front;
-w.view.decorator_(FlowLayout(bounds:w.bounds, margin:20@20, gap:10@10));
+w.view.decorator_(FlowLayout(bounds:w.bounds, margin:win_margin@win_margin, gap:win_gap@win_gap));
 w.background_(win_color);
 
 /////////////////// SETTINGS ///////////////////
 
-~settings_view = CompositeView(parent:w, bounds:810@200)
+~settings_view = CompositeView(parent:w, bounds:(win_width-(2*win_margin))@(win_height*0.12))
 .background_(Color.blue)
-.decorator_(FlowLayout(bounds:w.bounds, margin:20@20, gap:10@10));
+.decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
 
-~settings_label = StaticText(parent:~settings_view, bounds:Rect(width:80,height:20))
+~settings_label = StaticText(parent:~settings_view, bounds:Rect(width:(win_width-(2*win_margin)),height:label_height))
 .string_("Settings")
-.font_(Font(name:label_font,size:label_size))
-.stringColor_(label_color)
+.font_(Font(name:font_type,size:font_size))
+.stringColor_(font_color)
 .align_(\center);
 
 ~settings_view.decorator.nextLine;
 
 ~on_off_wahwah = Button(~settings_view,(button_width+30)@button_height)
-.states_([ ["OFF Wah-Wah", Color.white, Color.grey], ["ON Wah-Wah", Color.white, Color.red] ])
-.font_(Font(label_font,label_size))
+.states_([ ["OFF Wah-Wah", font_color, button_off_color], ["ON Wah-Wah", font_color, button_on_color] ])
+.font_(Font(name:font_type,size:font_size))
 .action_({arg obj;
 	if( obj.value == 1,
-		{~synth_wahwah = Synth("wahwah");
-			~freq_slider.enabled_(true);
-		},
-		{~synth_wahwah.free;
-			~freq_slider.enabled_(false);
-			~freq_slider.value_(slider_initial_value);
-		}
+		{~synth_wahwah = Synth("wahwah");},
+		{~synth_wahwah.free;}
 );});
 
 
 ~on_off_OctaverOC2 = Button(~settings_view,(button_width+60)@button_height)
-.states_([ ["OFF OctaverOC2", Color.white, Color.grey], ["ON OctaverOC2", Color.white, Color.red] ])
-.font_(Font("Monaco",15))
+.states_([ ["OFF OctaverOC2", font_color, button_off_color], ["ON OctaverOC2", font_color, button_on_color] ])
+.font_(Font(name:font_type,size:font_size))
 .action_({arg obj;
 	if( obj.value == 1,
-		{~synth_octaverOC2 = Synth("octaverOC2");
-			~direct_level_knob.enabled_(true);
-			~oc1_level_knob.enabled_(true);
-			~oc2_level_knob.enabled_(true);
-		},
-		{~synth_octaverOC2.free;
-			~direct_level_knob.enabled_(false);
-			~direct_level_knob.value_(knob_inital_value);
-			~oc1_level_knob.enabled_(false);
-			~oc1_level_knob.value_(knob_inital_value);
-			~oc2_level_knob.enabled_(false);
-			~oc2_level_knob.value_(knob_inital_value);
-		}
+		{~synth_octaverOC2 = Synth("octaverOC2");},
+		{~synth_octaverOC2.free;}
 );});
 
 ~on_off_OctaverM288 = Button(~settings_view,(button_width+60)@button_height)
-.states_([ ["OFF OctaverM288", Color.white, Color.grey], ["ON OctaverM288", Color.white, Color.red] ])
-.font_(Font(label_font,label_size))
+.states_([ ["OFF OctaverM288", font_color, button_off_color], ["ON OctaverM288", font_color, button_on_color] ])
+.font_(Font(name:font_type,size:font_size))
 .action_({arg obj;
 	if( obj.value == 1,
-		{~synth_octaverM288 = Synth("octaverM288");
-			~dry_level_knob.enabled_(true);
-			~growl_level_knob.enabled_(true);
-			~girth_level_knob.enabled_(true);
-		},
-		{~synth_octaverM288.free;
-			~dry_level_knob.enabled_(false);
-			~dry_level_knob.value_(knob_inital_value);
-			~growl_level_knob.enabled_(false);
-			~growl_level_knob.value_(knob_inital_value);
-			~girth_level_knob.enabled_(false);
-			~girth_level_knob.value_(knob_inital_value);
-		}
+		{~synth_octaverM288 = Synth("octaverM288");},
+		{~synth_octaverM288.free;}
 );});
 
 ~on_off_stereoDelay = Button(~settings_view,(button_width+70)@button_height)
-.states_([ ["OFF Stereo Delay", Color.white, Color.grey], ["ON Stereo Delay", Color.white, Color.red] ])
-.font_(Font(label_font,label_size))
+.states_([ ["OFF Stereo Delay", font_color, button_off_color], ["ON Stereo Delay", font_color, button_on_color] ])
+.font_(Font(font_type,font_size))
 .action_({arg obj;
 	if( obj.value == 1,
-		{~synth_stereoDelay = Synth("stereoDelay");
-			~level_knob.enabled_(true);
-			~time_knob.enabled_(true);
-			~feedback_knob.enabled_(true);
-			~tone_knob.enabled_(true);
-			~time_text.enabled_(true);
-		},
-		{~synth_stereoDelay.free;
-			~level_knob.enabled_(false);
-			~level_knob.value_(0.3);
-			~time_knob.enabled_(false);
-			~time_knob.value_(0.375);
-			~feedback_knob.enabled_(false);
-			~feedback_knob.value_(knob_inital_value);
-			~tone_knob.enabled_(false);
-			~tone_knob.value_(0.25);
-			~time_text.enabled_(false);
-			~time_text.value_(100);
-		}
+		{~synth_stereoDelay = Synth("stereoDelay");},
+		{~synth_stereoDelay.free;}
 );});
 
 w.view.decorator.nextLine;
@@ -275,12 +242,12 @@ w.view.decorator.nextLine;
 // WahWah view
 ~wahwah_view = CompositeView(parent:w, bounds:100@190)
 .background_(Color.black)
-.decorator_(FlowLayout(bounds:w.bounds, margin:20@20, gap:10@10));
+.decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
 
-~wahwah_label = StaticText(parent:~wahwah_view, bounds:Rect(width:75,height:20))
+~wahwah_label = StaticText(parent:~wahwah_view, bounds:Rect(width:75,height:label_height))
 .string_("Wah-Wah")
-.font_(Font(name:label_font,size:label_size))
-.stringColor_(label_color)
+.font_(Font(name:font_type,size:font_size))
+.stringColor_(font_color)
 .align(\center);
 
 ~wahwah_view.decorator.nextLine;
@@ -288,7 +255,6 @@ w.view.decorator.nextLine;
 // Slider for the WahWah effect
 ~freq_slider = Slider(parent:~wahwah_view, bounds:Rect(width:slider_width,height:slider_height))
 .thumbSize_(pixels:slider_size)
-.enabled_(false)
 .value_(slider_initial_value)
 .background_(slider_color)
 .action_({
@@ -299,10 +265,10 @@ w.view.decorator.nextLine;
 
 ~wahwah_view.decorator.nextLine;
 
-~freq_label = StaticText(parent:~wahwah_view, bounds:Rect(width:50,height:20))
+~freq_label = StaticText(parent:~wahwah_view, bounds:Rect(width:50,height:label_height))
 .string_("FREQ")
-.font_(Font(name:label_font,size:label_size))
-.stringColor_(label_color)
+.font_(Font(name:font_type,size:font_size))
+.stringColor_(font_color)
 .align_(\center);
 
 /////////////////// OCTAVER OC2 ///////////////////
@@ -310,19 +276,18 @@ w.view.decorator.nextLine;
 // OctaaverOC2 view
 ~octaverOC2_view = CompositeView(parent:w, bounds:300@190)
 .background_(Color.fromHexString("742a2a"))
-.decorator_(FlowLayout(bounds:w.bounds, margin:20@20, gap:10@10));
+.decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
 
-~octaverOC2_label = StaticText(parent:~octaverOC2_view, bounds:Rect(width:250,height:20))
+~octaverOC2_label = StaticText(parent:~octaverOC2_view, bounds:Rect(width:250,height:label_height))
 .string_("Octaver OC2")
-.font_(Font(name:label_font,size:label_size))
-.stringColor_(label_color)
+.font_(Font(name:font_type,size:font_size))
+.stringColor_(font_color)
 .align_(\center);
 
 ~octaverOC2_view.decorator.nextLine;
 
 ~direct_level_knob = Knob(~octaverOC2_view, knob_dim@knob_dim)
 .value_(knob_inital_value)
-.enabled_(false)
 .action_({ arg obj;
 	var direct_level = obj.value.round(0.01);
 	~synth_octaverOC2.set(\direct_level, direct_level);
@@ -330,7 +295,6 @@ w.view.decorator.nextLine;
 
 ~oc1_level_knob = Knob(~octaverOC2_view, knob_dim@knob_dim)
 .value_(knob_inital_value)
-.enabled_(false)
 .action_({ arg obj;
 	var oc1_level = obj.value.round(0.01);
 	~synth_octaverOC2.set(\oc1_level, oc1_level);
@@ -338,7 +302,6 @@ w.view.decorator.nextLine;
 
 ~oc2_level_knob = Knob(~octaverOC2_view, knob_dim@knob_dim)
 .value_(knob_inital_value)
-.enabled_(false)
 .action_({ arg obj;
 	var oc2_level = obj.value.round(0.01);
 	~synth_octaverOC2.set(\oc2_level, oc2_level);
@@ -346,22 +309,22 @@ w.view.decorator.nextLine;
 
 ~octaverOC2_view.decorator.nextLine;
 
-~direct_level_label = StaticText(~octaverOC2_view, knob_dim@30)
+~direct_level_label = StaticText(~octaverOC2_view, knob_dim@label_height)
 .string_("DRY")
-.font_(Font(label_font,label_size))
-.stringColor_(label_color)
+.font_(Font(font_type,font_size))
+.stringColor_(font_color)
 .align_(\center);
 
-~oc1_level_label = StaticText(~octaverOC2_view, knob_dim@30)
+~oc1_level_label = StaticText(~octaverOC2_view, knob_dim@label_height)
 .string_("OCT1")
-.font_(Font(label_font,label_size))
-.stringColor_(label_color)
+.font_(Font(font_type,font_size))
+.stringColor_(font_color)
 .align_(\center);
 
-~oc2_level_label = StaticText(~octaverOC2_view, knob_dim@30)
+~oc2_level_label = StaticText(~octaverOC2_view, knob_dim@label_height)
 .string_("OCT2")
-.font_(Font(label_font,label_size))
-.stringColor_(label_color)
+.font_(Font(font_type,font_size))
+.stringColor_(font_color)
 .align_(\center);
 
 /////////////////// OCTAVER M288 ///////////////////
@@ -369,19 +332,19 @@ w.view.decorator.nextLine;
 // OctaverM288 view
 ~octaverM288_view = CompositeView(parent:w, bounds:390@190)
 .background_(Color.blue)
-.decorator_(FlowLayout(bounds:w.bounds, margin:20@20, gap:10@10));
+.decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
 
-~octaverM288_label = StaticText(parent:~octaverM288_view, bounds:Rect(width:250,height:20))
+~octaverM288_label = StaticText(parent:~octaverM288_view, bounds:Rect(width:250,height:label_height))
 .string_("Octaver M288")
-.font_(Font(name:label_font,size:label_size))
-.stringColor_(label_color)
+.font_(Font(name:font_type,size:font_size))
+.stringColor_(font_color)
 .align_(\center);
 
 ~octaverM288_view.decorator.nextLine;
 
 ~mid_plus_button = Button(~octaverM288_view,button_width@button_height)
-.states_([ ["MID+", label_color, Color.gray], ["MID+", label_color, Color.red] ])
-.font_(Font(label_font,label_size))
+.states_([ ["MID+", font_color, button_off_color], ["MID+", font_color, button_on_color] ])
+.font_(Font(font_type,font_size))
 .value_(0)
 .action_({arg obj;
 	if( obj.value == 1,
@@ -391,7 +354,6 @@ w.view.decorator.nextLine;
 
 ~dry_level_knob = Knob(~octaverM288_view, knob_dim@knob_dim)
 .value_(knob_inital_value)
-.enabled_(false)
 .action_({ arg obj;
 	var dry_level = obj.value.round(0.01);
 	~synth_octaverM288.set(\dry_level, dry_level);
@@ -399,7 +361,6 @@ w.view.decorator.nextLine;
 
 ~growl_level_knob = Knob(~octaverM288_view, knob_dim@knob_dim)
 .value_(knob_inital_value)
-.enabled_(false)
 .action_({ arg obj;
 	var growl_level = obj.value.round(0.01);
 	~synth_octaverM288.set(\growl_level, growl_level);
@@ -407,7 +368,6 @@ w.view.decorator.nextLine;
 
 ~girth_level_knob = Knob(~octaverM288_view, knob_dim@knob_dim)
 .value_(knob_inital_value)
-.enabled_(false)
 .action_({ arg obj;
 	var girth_level = obj.value.round(0.01);
 	~synth_octaverM288.set(\girth_level, girth_level);
@@ -415,28 +375,28 @@ w.view.decorator.nextLine;
 
 ~octaverM288_view.decorator.nextLine;
 
-~blank_level_label = StaticText(~octaverM288_view, knob_dim@30)
+~blank_level_label = StaticText(~octaverM288_view, knob_dim@label_height)
 .string_("")
-.font_(Font(name:label_font,size:label_size))
-.stringColor_(label_color)
+.font_(Font(name:font_type,size:font_size))
+.stringColor_(font_color)
 .align_(\center);
 
-~dry_level_label = StaticText(~octaverM288_view, knob_dim@30)
+~dry_level_label = StaticText(~octaverM288_view, knob_dim@label_height)
 .string_("DRY")
-.font_(Font(name:label_font,size:label_size))
-.stringColor_(label_color)
+.font_(Font(name:font_type,size:font_size))
+.stringColor_(font_color)
 .align_(\center);
 
-~growl_level_label = StaticText(~octaverM288_view, knob_dim@30)
+~growl_level_label = StaticText(~octaverM288_view, knob_dim@label_height)
 .string_("GROWL")
-.font_(Font(name:label_font,size:label_size))
-.stringColor_(label_color)
+.font_(Font(name:font_type,size:font_size))
+.stringColor_(font_color)
 .align_(\center);
 
-~girth_level_label = StaticText(~octaverM288_view, knob_dim@30)
+~girth_level_label = StaticText(~octaverM288_view, knob_dim@label_height)
 .string_("GIRTH")
-.font_(Font(name:label_font,size:label_size))
-.stringColor_(label_color)
+.font_(Font(name:font_type,size:font_size))
+.stringColor_(font_color)
 .align_(\center);
 
 w.view.decorator.nextLine;
@@ -446,12 +406,12 @@ w.view.decorator.nextLine;
 // Stereo Delay view
 ~stereoDelay_view = CompositeView(parent:w, bounds:410@460)
 .background_(Color.blue)
-.decorator_(FlowLayout(bounds:w.bounds, margin:20@20, gap:10@10));
+.decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
 
-~stereoDelay_label = StaticText(parent:~stereoDelay_view, bounds:Rect(width:150,height:20))
+~stereoDelay_label = StaticText(parent:~stereoDelay_view, bounds:Rect(width:150,height:label_height))
 .string_("Stereo Delay")
-.font_(Font(name:label_font,size:label_size))
-.stringColor_(label_color)
+.font_(Font(name:font_type,size:font_size))
+.stringColor_(font_color)
 .align(\center);
 
 ~stereoDelay_view.decorator.nextLine;
@@ -490,17 +450,17 @@ w.view.decorator.nextLine;
 
 ~stereoDelay_view.decorator.nextLine;
 
-~level_text = StaticText(~stereoDelay_view, knob_dim@14)
+~level_text = StaticText(~stereoDelay_view, knob_dim@(label_height-6))
 .string_(20*log(~level_knob.value).round(0.01)+"dB")
-.font_(Font(label_font,label_size-4))
-.stringColor_(label_color)
+.font_(Font(font_type,font_size-4))
+.stringColor_(font_color)
 .align_(\center);
 
-~time_text = NumberBox(~stereoDelay_view, 35@14)
+~time_text = NumberBox(~stereoDelay_view, (knob_dim/2)@(label_height-6))
 .value_(100)
 .clipLo_(40)
 .clipHi_(200)
-.font_(Font(label_font,label_size-4))
+.font_(Font(font_type,font_size-4))
 .normalColor_(Color.black)
 .stringColor_(Color.black)
 .typingColor_(Color.black)
@@ -510,48 +470,48 @@ w.view.decorator.nextLine;
 .action_({ arg obj;
 	       ~time_knob.valueAction_(obj.value.linlin(40,200,0,1));
           });
-~blank_label = StaticText(~stereoDelay_view, 40@14)
+~blank_label = StaticText(~stereoDelay_view, 40@(label_height-6))
 .string_("BPM")
-.font_(Font(label_font,label_size-4))
+.font_(Font(font_type,font_size-4))
 .stringColor_(Color.white)
 .align_(\left);
 
-~feedback_text = StaticText(~stereoDelay_view, knob_dim@14)
+~feedback_text = StaticText(~stereoDelay_view, knob_dim@(label_height-6))
 .string_(~feedback_knob.value.linlin(0,1,0,8)+"Rep")
-.font_(Font(label_font,label_size-4))
+.font_(Font(font_type,font_size-4))
 .stringColor_(Color.white)
 .align_(\center);
 
-~tone_text = StaticText(~stereoDelay_view, knob_dim@14)
+~tone_text = StaticText(~stereoDelay_view, knob_dim@(label_height-6))
 .string_(~tone_knob.value.linlin(0,1,1000,7000)+"Hz")
-.font_(Font(label_font,label_size-4))
-.stringColor_(label_color)
+.font_(Font(font_type,font_size-4))
+.stringColor_(font_color)
 .align_(\center);
 
 ~stereoDelay_view.decorator.nextLine;
 
-~level_label = StaticText(~stereoDelay_view, knob_dim@20)
+~level_label = StaticText(~stereoDelay_view, knob_dim@label_height)
 .string_("LEVEL")
-.font_(Font(label_font,label_size))
-.stringColor_(label_color)
+.font_(Font(font_type,font_size))
+.stringColor_(font_color)
 .align_(\center);
 
-~time_label = StaticText(~stereoDelay_view, knob_dim@20)
+~time_label = StaticText(~stereoDelay_view, knob_dim@label_height)
 .string_("TIME")
-.font_(Font(label_font,label_size))
-.stringColor_(label_color)
+.font_(Font(font_type,font_size))
+.stringColor_(font_color)
 .align_(\center);
 
-~feedback_label = StaticText(~stereoDelay_view, knob_dim@20)
+~feedback_label = StaticText(~stereoDelay_view, knob_dim@label_height)
 .string_("FEEDBACK")
-.font_(Font(label_font,label_size))
-.stringColor_(label_color)
+.font_(Font(font_type,font_size))
+.stringColor_(font_color)
 .align_(\center);
 
-~tone_label = StaticText(~stereoDelay_view, knob_dim@20)
+~tone_label = StaticText(~stereoDelay_view, knob_dim@label_height)
 .string_("TONE")
-.font_(Font(label_font,label_size))
-.stringColor_(label_color)
+.font_(Font(font_type,font_size))
+.stringColor_(font_color)
 .align_(\center);
 
 ~stereoDelay_view.decorator.nextLine;
@@ -559,8 +519,8 @@ w.view.decorator.nextLine;
 // chorus controls
 
 ~chorus_switch = Button(~stereoDelay_view, button_width@button_height)
-.states_([ ["CHORUS", Color.white, Color.gray], ["CHORUS", Color.white, Color.red] ])
-.font_(Font(label_font,label_size))
+.states_([ ["CHORUS", font_color, button_off_color], ["CHORUS", font_color, button_on_color] ])
+.font_(Font(font_type,font_size))
 .action_({ arg obj;
 	       if( obj.value == 1,
 		        {~synth_stereoDelay.set(\mix, ~mix_knob.value);
@@ -594,24 +554,24 @@ w.view.decorator.nextLine;
 
 ~stereoDelay_view.decorator.nextLine;
 
-~blank_label = StaticText(~stereoDelay_view, knob_dim@30);
+~blank_label = StaticText(~stereoDelay_view, knob_dim@label_height);
 
-~mix_label = StaticText(~stereoDelay_view, knob_dim@30)
+~mix_label = StaticText(~stereoDelay_view, knob_dim@label_height)
 .string_("MIX")
-.font_(Font(label_font,label_size))
-.stringColor_(label_color)
+.font_(Font(font_type,font_size))
+.stringColor_(font_color)
 .align_(\center);
 
-~rate_label = StaticText(~stereoDelay_view, knob_dim@30)
+~rate_label = StaticText(~stereoDelay_view, knob_dim@label_height)
 .string_("RATE")
-.font_(Font(label_font,label_size))
-.stringColor_(label_color)
+.font_(Font(font_type,font_size))
+.stringColor_(font_color)
 .align_(\center);
 
-~depth_label = StaticText(~stereoDelay_view, knob_dim@30)
+~depth_label = StaticText(~stereoDelay_view, knob_dim@label_height)
 .string_("DEPTH")
-.font_(Font(label_font,label_size))
-.stringColor_(label_color)
+.font_(Font(font_type,font_size))
+.stringColor_(font_color)
 .align_(\center);
 
 ~stereoDelay_view.decorator.nextLine;
@@ -619,8 +579,8 @@ w.view.decorator.nextLine;
 // reverb controls
 
 ~reverb_switch = Button(~stereoDelay_view, button_width@button_height)
-.states_([ ["REVERB", Color.white, Color.gray],["REVERB", Color.white, Color.red] ])
-.font_(Font(label_font,label_size))
+.states_([ ["REVERB", font_color, button_off_color],["REVERB", font_color, button_on_color] ])
+.font_(Font(font_type,font_size))
 .action_({ arg obj;
 	       if( obj.value == 1,
 		        {~synth_stereoDelay.set(\blend, ~blend_knob.value);
@@ -654,24 +614,24 @@ w.view.decorator.nextLine;
 
 ~stereoDelay_view.decorator.nextLine;
 
-~blank_label = StaticText(~stereoDelay_view, knob_dim@30);
+~blank_label = StaticText(~stereoDelay_view, knob_dim@label_height);
 
-~blend_label = StaticText(~stereoDelay_view, knob_dim@30)
+~blend_label = StaticText(~stereoDelay_view, knob_dim@label_height)
 .string_("BLEND")
-.font_(Font(label_font,label_size))
-.stringColor_(label_color)
+.font_(Font(font_type,font_size))
+.stringColor_(font_color)
 .align_(\center);
 
-~presence_label = StaticText(~stereoDelay_view, knob_dim@30)
+~presence_label = StaticText(~stereoDelay_view, knob_dim@label_height)
 .string_("PRESENCE")
-.font_(Font(label_font,label_size))
-.stringColor_(label_color)
+.font_(Font(font_type,font_size))
+.stringColor_(font_color)
 .align_(\center);
 
-~decay_label = StaticText(~stereoDelay_view, knob_dim@30)
+~decay_label = StaticText(~stereoDelay_view, knob_dim@label_height)
 .string_("DECAY")
-.font_(Font(label_font,label_size))
-.stringColor_(label_color)
+.font_(Font(font_type,font_size))
+.stringColor_(font_color)
 .align_(\center);
 
 /////////////////// KINECT ///////////////////
@@ -679,12 +639,12 @@ w.view.decorator.nextLine;
 // Kinect view
 ~kinect_view = CompositeView(parent:w, bounds:390@460)
 .background_(Color.grey)
-.decorator_(FlowLayout(bounds:w.bounds, margin:20@20, gap:10@10));
+.decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
 
-~kinect_label = StaticText(parent:~kinect_view, bounds:Rect(width:150,height:20))
+~kinect_label = StaticText(parent:~kinect_view, bounds:Rect(width:150,height:label_height))
 .string_("Kinect View")
-.font_(Font(name:label_font,size:label_size))
-.stringColor_(label_color)
+.font_(Font(name:font_type,size:font_size))
+.stringColor_(font_color)
 .align(\center);
 
 )
