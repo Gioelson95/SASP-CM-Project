@@ -140,8 +140,8 @@ b = Buffer.read(server:s, path:"/Users/gioelepozzi/Desktop/SASP-CM-Project/Audio
 // Main window parameters
 var screen_width = Window.screenBounds.width;
 var screen_height = Window.screenBounds.height;
-var win_width = 0.59*screen_width;
-var win_height = 0.91*screen_height;
+var win_width = 0.548*screen_width;
+var win_height = 0.798*screen_height;
 var left_pad = (screen_width - win_width)/2;
 var top_pad = (screen_height - win_height)/2;
 var win_color = Color(red:224, green:224, blue:224);  // Classic light grey
@@ -153,18 +153,18 @@ var comp_view_margin = win_margin;
 var comp_view_gap = win_gap;
 
 // Knob parameters
-var knob_dim = 80;
+var knob_dim = 0.056*screen_width;
 var knob_inital_value = 0.5;
 
 // Slider parameters
-var slider_width = 50;
-var slider_height = 80;
-var slider_size = 15;   // dimension of the moving part of the slider
+var slider_width = 0.035*screen_width;
+var slider_height = 0.056*screen_width;
+var slider_size = 0.017*screen_height;   // dimension of the moving part of the slider
 var slider_initial_value = 0.22;
 var slider_color = Color.black;
 
 // Label parameters
-var label_height = 20;
+var label_height = 0.022*screen_height;
 
 // Font parameters
 var font_type = "Monaco";
@@ -172,14 +172,18 @@ var font_size = 15;
 var font_color = Color.white;
 
 // Button parameters
-var button_width = 80;
-var button_height = 30;
+var button_width = 0.056*screen_width;
+var button_height = 0.033*screen_height;
+var button_setting_width = 0.11*screen_width;
 var button_on_color = Color.red;
 var button_off_color = Color.grey;
 
+// Text parameters
+var text_height = 0.018*screen_height;
+
 // Initialization of main window
 Window.closeAll;
-w = Window(name:"Effects", bounds:Rect(left:left_pad, top:top_pad, width:win_width, height:win_height),resizable:true, border:true, server:s, scroll:true);
+w = Window(name:"Effects", bounds:Rect(left:left_pad, top:top_pad, width:win_width, height:win_height),resizable:false, border:true, server:s, scroll:false);
 w.front;
 w.view.decorator_(FlowLayout(bounds:w.bounds, margin:win_margin@win_margin, gap:win_gap@win_gap));
 w.background_(win_color);
@@ -190,7 +194,7 @@ w.background_(win_color);
 .background_(Color.blue)
 .decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
 
-~settings_label = StaticText(parent:~settings_view, bounds:Rect(width:(win_width-(2*win_margin)),height:label_height))
+~settings_label = StaticText(parent:~settings_view, bounds:(win_width-(2*win_margin))@label_height)
 .string_("Settings")
 .font_(Font(name:font_type,size:font_size))
 .stringColor_(font_color)
@@ -198,7 +202,7 @@ w.background_(win_color);
 
 ~settings_view.decorator.nextLine;
 
-~on_off_wahwah = Button(~settings_view,(button_width+30)@button_height)
+~on_off_wahwah = Button(~settings_view,(button_setting_width)@button_height)
 .states_([ ["OFF Wah-Wah", font_color, button_off_color], ["ON Wah-Wah", font_color, button_on_color] ])
 .font_(Font(name:font_type,size:font_size))
 .action_({arg obj;
@@ -208,7 +212,7 @@ w.background_(win_color);
 );});
 
 
-~on_off_OctaverOC2 = Button(~settings_view,(button_width+60)@button_height)
+~on_off_OctaverOC2 = Button(~settings_view,(button_setting_width)@button_height)
 .states_([ ["OFF OctaverOC2", font_color, button_off_color], ["ON OctaverOC2", font_color, button_on_color] ])
 .font_(Font(name:font_type,size:font_size))
 .action_({arg obj;
@@ -217,7 +221,7 @@ w.background_(win_color);
 		{~synth_octaverOC2.free;}
 );});
 
-~on_off_OctaverM288 = Button(~settings_view,(button_width+60)@button_height)
+~on_off_OctaverM288 = Button(~settings_view,(button_setting_width)@button_height)
 .states_([ ["OFF OctaverM288", font_color, button_off_color], ["ON OctaverM288", font_color, button_on_color] ])
 .font_(Font(name:font_type,size:font_size))
 .action_({arg obj;
@@ -226,7 +230,7 @@ w.background_(win_color);
 		{~synth_octaverM288.free;}
 );});
 
-~on_off_stereoDelay = Button(~settings_view,(button_width+70)@button_height)
+~on_off_stereoDelay = Button(~settings_view,(button_setting_width)@button_height)
 .states_([ ["OFF Stereo Delay", font_color, button_off_color], ["ON Stereo Delay", font_color, button_on_color] ])
 .font_(Font(font_type,font_size))
 .action_({arg obj;
@@ -240,12 +244,12 @@ w.view.decorator.nextLine;
 /////////////////// WAH-WAH ///////////////////
 
 // WahWah view
-~wahwah_view = CompositeView(parent:w, bounds:100@190)
+~wahwah_view = CompositeView(parent:w, bounds:(0.054*screen_width)@(0.18*screen_height))
 .background_(Color.black)
 .decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
 
 ~wahwah_label = StaticText(parent:~wahwah_view, bounds:Rect(width:75,height:label_height))
-.string_("Wah-Wah")
+.string_("WahWah")
 .font_(Font(name:font_type,size:font_size))
 .stringColor_(font_color)
 .align(\center);
@@ -274,11 +278,11 @@ w.view.decorator.nextLine;
 /////////////////// OCTAVER OC2 ///////////////////
 
 // OctaaverOC2 view
-~octaverOC2_view = CompositeView(parent:w, bounds:300@190)
+~octaverOC2_view = CompositeView(parent:w, bounds:(0.2*screen_width)@(0.18*screen_height))
 .background_(Color.fromHexString("742a2a"))
 .decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
 
-~octaverOC2_label = StaticText(parent:~octaverOC2_view, bounds:Rect(width:250,height:label_height))
+~octaverOC2_label = StaticText(parent:~octaverOC2_view, bounds:((0.21*screen_width)-(2*comp_view_margin))@label_height)
 .string_("Octaver OC2")
 .font_(Font(name:font_type,size:font_size))
 .stringColor_(font_color)
@@ -330,11 +334,11 @@ w.view.decorator.nextLine;
 /////////////////// OCTAVER M288 ///////////////////
 
 // OctaverM288 view
-~octaverM288_view = CompositeView(parent:w, bounds:390@190)
+~octaverM288_view = CompositeView(parent:w, bounds:(0.261*screen_width)@(0.18*screen_height))
 .background_(Color.blue)
 .decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
 
-~octaverM288_label = StaticText(parent:~octaverM288_view, bounds:Rect(width:250,height:label_height))
+~octaverM288_label = StaticText(parent:~octaverM288_view, bounds:(0.26*screen_width-(2*comp_view_margin))@label_height)
 .string_("Octaver M288")
 .font_(Font(name:font_type,size:font_size))
 .stringColor_(font_color)
@@ -375,11 +379,9 @@ w.view.decorator.nextLine;
 
 ~octaverM288_view.decorator.nextLine;
 
-~blank_level_label = StaticText(~octaverM288_view, knob_dim@label_height)
+~blank_label = StaticText(~octaverM288_view, knob_dim@label_height)
 .string_("")
-.font_(Font(name:font_type,size:font_size))
-.stringColor_(font_color)
-.align_(\center);
+.font_(Font(name:font_type,size:font_size));
 
 ~dry_level_label = StaticText(~octaverM288_view, knob_dim@label_height)
 .string_("DRY")
@@ -404,15 +406,15 @@ w.view.decorator.nextLine;
 /////////////////// STEREO DELAY ///////////////////
 
 // Stereo Delay view
-~stereoDelay_view = CompositeView(parent:w, bounds:410@460)
+~stereoDelay_view = CompositeView(parent:w, bounds:(0.26*screen_width)@(0.47*screen_height))
 .background_(Color.blue)
 .decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
 
-~stereoDelay_label = StaticText(parent:~stereoDelay_view, bounds:Rect(width:150,height:label_height))
+~stereoDelay_label = StaticText(parent:~stereoDelay_view, bounds:(0.26*screen_width-(2*comp_view_margin))@label_height)
 .string_("Stereo Delay")
 .font_(Font(name:font_type,size:font_size))
 .stringColor_(font_color)
-.align(\center);
+.align_(\center);
 
 ~stereoDelay_view.decorator.nextLine;
 
@@ -450,13 +452,13 @@ w.view.decorator.nextLine;
 
 ~stereoDelay_view.decorator.nextLine;
 
-~level_text = StaticText(~stereoDelay_view, knob_dim@(label_height-6))
+~level_text = StaticText(~stereoDelay_view, knob_dim@text_height)
 .string_(20*log(~level_knob.value).round(0.01)+"dB")
 .font_(Font(font_type,font_size-4))
 .stringColor_(font_color)
 .align_(\center);
 
-~time_text = NumberBox(~stereoDelay_view, (knob_dim/2)@(label_height-6))
+~time_text = NumberBox(~stereoDelay_view, ((knob_dim-comp_view_gap)/2)@text_height)
 .value_(100)
 .clipLo_(40)
 .clipHi_(200)
@@ -470,19 +472,19 @@ w.view.decorator.nextLine;
 .action_({ arg obj;
 	       ~time_knob.valueAction_(obj.value.linlin(40,200,0,1));
           });
-~blank_label = StaticText(~stereoDelay_view, 40@(label_height-6))
+~blank_label = StaticText(~stereoDelay_view, ((knob_dim-comp_view_gap)/2)@text_height)
 .string_("BPM")
 .font_(Font(font_type,font_size-4))
 .stringColor_(Color.white)
 .align_(\left);
 
-~feedback_text = StaticText(~stereoDelay_view, knob_dim@(label_height-6))
+~feedback_text = StaticText(~stereoDelay_view, knob_dim@text_height)
 .string_(~feedback_knob.value.linlin(0,1,0,8)+"Rep")
 .font_(Font(font_type,font_size-4))
 .stringColor_(Color.white)
 .align_(\center);
 
-~tone_text = StaticText(~stereoDelay_view, knob_dim@(label_height-6))
+~tone_text = StaticText(~stereoDelay_view, knob_dim@text_height)
 .string_(~tone_knob.value.linlin(0,1,1000,7000)+"Hz")
 .font_(Font(font_type,font_size-4))
 .stringColor_(font_color)
@@ -637,7 +639,7 @@ w.view.decorator.nextLine;
 /////////////////// KINECT ///////////////////
 
 // Kinect view
-~kinect_view = CompositeView(parent:w, bounds:390@460)
+~kinect_view = CompositeView(parent:w, bounds:(0.261*screen_width)@(0.47*screen_height))
 .background_(Color.grey)
 .decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
 
@@ -646,5 +648,8 @@ w.view.decorator.nextLine;
 .font_(Font(name:font_type,size:font_size))
 .stringColor_(font_color)
 .align(\center);
+
+screen_width.postln;
+screen_height.postln;
 
 )
