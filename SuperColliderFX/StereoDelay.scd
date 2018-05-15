@@ -78,9 +78,11 @@ var top_padding = (screen_height-win_height)/2;
 
 var knob_dim = 120;
 
+var i = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/SuperColliderFX/blue.png");
+
 w = Window("Stereo Digital Delay", Rect(left_padding, top_padding, win_width, win_height));
 w.front;
-w.background_(Color.blue);
+w.view.backgroundImage_(i);
 w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 
 // delay controls
@@ -202,6 +204,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .action_({ arg obj;
 	       var mix = obj.value.round(0.01);
 	       x.set(\mix, mix);
+	       ~mix_label.string_("MIX"+(mix*100)+"%")
            });
 
 ~rate_knob = Knob(w, knob_dim@knob_dim)
@@ -221,7 +224,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 ~blank_label = StaticText(w, knob_dim@30);
 
 ~mix_label = StaticText(w, knob_dim@30)
-.string_("MIX")
+.string_("MIX"+(~mix_knob.value.round(0.01)*100)+"%")
 .font_(Font("Monaco",20))
 .stringColor_(Color.white)
 .align_(\center);
@@ -258,6 +261,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .action_({ arg obj;
 	       var blend = obj.value.round(0.01);
 	       x.set(\blend, blend);
+	       ~blend_label.string_("BLEND"+(blend*100)+"%")
            });
 
 ~presence_knob = Knob(w, knob_dim@knob_dim)
@@ -277,7 +281,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 ~blank_label = StaticText(w, knob_dim@30);
 
 ~blend_label = StaticText(w, knob_dim@30)
-.string_("BLEND")
+.string_("BLEND"+(~blend_knob.value.round(0.01)*100)+"%")
 .font_(Font("Monaco",20))
 .stringColor_(Color.white)
 .align_(\center);
