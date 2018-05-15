@@ -5,7 +5,7 @@ b = Buffer.read(s,"/Users/alessandro/Desktop/CHORUS.aif");
 SynthDef.new("AmpEQ",
 	{
 		arg
-		volume = 1,     // volume of the amp, range: 0 - 2
+		volume = 1,     // volume of the amp, range: 0 - 4
 		bass = 0,      // active bass eq from -10dB to +8db
 		middle = 0,   // active middle eq from -10dB to +8db
 		treble = 0;  // active treble eq from -10dB to +8db
@@ -41,9 +41,11 @@ var top_padding = (screen_height-win_height)/2;
 
 var knob_dim = 120;
 
+var i = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/SuperColliderFX/metal.png");
+
 w = Window("AmpEQ", Rect(left_padding, top_padding, win_width, win_height));
 w.front;
-w.background = Color.fromHexString("CA853E");
+w.view.backgroundImage_(i);
 w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 
 ~volume_knob = Knob(w, knob_dim@knob_dim)
@@ -76,25 +78,25 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 
 ~volume_label = StaticText(w, knob_dim@30)
 .string_("VOLUME")
-.font_(Font("Monaco",20))
+.font_(Font("Monaco",22))
 .stringColor_(Color.black)
 .align_(\center);
 
 ~bass_label = StaticText(w, knob_dim@30)
 .string_("BASS")
-.font_(Font("Monaco",20))
+.font_(Font("Monaco",22))
 .stringColor_(Color.black)
 .align_(\center);
 
 ~middle_label = StaticText(w, knob_dim@30)
 .string_("MIDDLE")
-.font_(Font("Monaco",20))
+.font_(Font("Monaco",22))
 .stringColor_(Color.black)
 .align_(\center);
 
 ~treble_label = StaticText(w, knob_dim@30)
 .string_("TREBLE")
-.font_(Font("Monaco",20))
+.font_(Font("Monaco",22))
 .stringColor_(Color.black)
 .align_(\center);
 
