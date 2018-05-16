@@ -1,6 +1,6 @@
 s.boot;
 
-b = Buffer.read(s,"/Users/gioelepozzi/Desktop/SASP-CM-Project/AudioSamples/WAHWAH.aif");
+b = Buffer.read(s,"/Users/lucavilla/Desktop/CLEAN.aif");
 
 
 //set the server
@@ -72,13 +72,14 @@ OSCdef('OSCreceiver',
 		freq = msg[1].linlin(inMin:0, inMax:1, outMin:400, outMax:1600).round(1);
 		freq.postln;
 		instr.set(\freq,freq); // change the frequency and amplitude of our instrument
-
 	},
 	"/hfosc/horizontalmotion"); // defined tag.
 )
 
 
 // "/mobile1/rotation" for android with Eyw application
+
+
 
 
 
