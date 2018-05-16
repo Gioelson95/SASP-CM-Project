@@ -1,6 +1,21 @@
 s.boot;
 
-b = Buffer.read(s,"/Users/lucavilla/Desktop/CLEAN.aif");
+b = Buffer.read(s,"/Users/gioelepozzi/Desktop/SASP-CM-Project/AudioSamples/WAHWAH.aif");
+
+
+//set the server
+(
+thisProcess.openUDPPort(52000);
+NetAddr("192.168.0.101",52000);
+)
+// online use
+
+
+
+
+
+
+
 
 (
 SynthDef.new("wahwah",
@@ -50,7 +65,25 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .align_(\center);
 )
 
+(
+var instr; // here we have an instrument
+instr = Synth(\wahwah); //the instrument is simpleSin
 
+OSCdef('OSCreceiver',
+	{
+		arg msg; // we expect to receive a OSC message, which is a vector
+
+		var freq; // we will have two variables: frequency and amplitude (volume)
+
+
+		msg.postln; // this shows the msg: msg[0]=tag, msg[1], msg[2], ... are the actual values
+		freq= msg[1].linlin(inMin:-1, inMax:1, outMin:400, outMax:1600).round(1);
+		freq.postln;
+		instr.set(\freq,freq); // change the frequency and amplitude of our instrument
+
+	},
+	"/hfosc/horizontalmotion"); // defined tag.
+)
 
 
 
