@@ -6,16 +6,8 @@ b = Buffer.read(s,"/Users/gioelepozzi/Desktop/SASP-CM-Project/AudioSamples/WAHWA
 //set the server
 (
 thisProcess.openUDPPort(52000);
-NetAddr("192.168.0.101",52000);
+NetAddr("172.20.10.2",52000);
 )
-// online use
-
-
-
-
-
-
-
 
 (
 SynthDef.new("wahwah",
@@ -77,7 +69,7 @@ OSCdef('OSCreceiver',
 
 
 		msg.postln; // this shows the msg: msg[0]=tag, msg[1], msg[2], ... are the actual values
-		freq= msg[1].linlin(inMin:-1, inMax:1, outMin:400, outMax:1600).round(1);
+		freq = msg[1].linlin(inMin:0, inMax:1, outMin:400, outMax:1600).round(1);
 		freq.postln;
 		instr.set(\freq,freq); // change the frequency and amplitude of our instrument
 
@@ -86,7 +78,7 @@ OSCdef('OSCreceiver',
 )
 
 
-
+// "/mobile1/rotation" for android with Eyw application
 
 
 
