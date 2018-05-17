@@ -1,144 +1,14 @@
 s.boot;
 
-b = Buffer.read(server:s, path:"/Users/gioelepozzi/Desktop/SASP-CM-Project/AudioSamples/CLEAN.aif");
+//b = Buffer.read(s,"/Users/alessandro/Desktop/WAHWAH.aif");
 
-// Creation of the Synths
+// Set up the server
 (
-/////////////// Synth for the WahWah /////////////////
-~synth_wahwah = SynthDef("wahwah",
-	{
-		arg
-		freq = 750,
-		on_off = 0;
-		//var signal = PlayBuf.ar(2, b.bufnum);
-		var signal = In.ar(2,2);
-
-		var outputFreqBoost = BPeakEQ.ar(in: signal, freq: freq.lag(0.5), rq: 0.58, db: 12, mul: 1, add: 0);
-		var outputHPF = HPF.ar(in: outputFreqBoost, freq: freq*0.8);
-		var outputLPF = LPF.ar(in: outputHPF, freq: freq*1.6);
-		var output = outputLPF + outputLPF.distort*0.25;
-
-		output = (output * on_off) + (signal * (1-on_off));
-
-		Out.ar([10,11], channelsArray:output);
-}).send;
-
-/////////////// Synth for the Octaver OC2 /////////////////
-~synth_octaverOC2 = SynthDef("octaverOC2",
-	{
-		arg
-		direct_level = 0.5,  // level of direct input, range 0 - 1
-		oc1_level = 0.5,     // level of first octave below, range 0 - 1
-		oc2_level = 0.5,     // level of second octave below, range 0 - 1
-		on_off = 0;
-
-		var signal = In.ar(10,2);
-		var signal_oc1 = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.5,mul:oc1_level*1.5);
-		var signal_oc2 = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.2,mul:oc2_level);
-
-		var output = signal*direct_level + LPF.ar(signal_oc1,440) + LPF.ar(signal_oc2,220);
-
-		output = (output * on_off) + (signal * (1-on_off));
-
-		Out.ar([12,13], output);
-}).send;
-
-/////////////// Synth for the Octaver M288 /////////////////
-~synth_octaverM288 = SynthDef("octaverM288",
-	{
-		arg
-		dry_level = 0.5,      // level of direct input, range 0 - 1
-		growl_level = 0.5,    // level of first octave below, range 0 - 1
-		girth_level = 0.5,    // level of second octave below, range 0 - 1
-		mid_plus_switch = 0,   // select if mid+ switch is clicked, 1 if it is clicked, 0 otherwise
-		on_off = 0;
-
-		var signal = In.ar(12,2);
-		var signal_octave = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.5);
-		var signal_octave_LPF = LPF.ar(in: signal_octave,freq:220);
-		var growl_signal = BBandPass.ar(in:signal_octave,freq:200,bw:3,mul:growl_level*2);
-		var girth_signal = BBandPass.ar(in:signal_octave,freq:100,bw:3,mul:girth_level*1.5);
-		var mid_plus_signal = BPeakEQ.ar(in:signal,freq:400,rq:2,db:10,mul:mid_plus_switch);
-		var output = (signal*(1-mid_plus_switch) + mid_plus_signal)*dry_level + growl_signal + girth_signal;
-
-		output = (output * on_off) + (signal * (1-on_off));
-
-		Out.ar([13,14], output);
-}).send;
-
-/////////////// Synth for the Stereo Delay /////////////////
-~synth_stereoDelay = SynthDef.new("stereoDelay",
-	{
-		arg
-		// delay parameters
-		level = 0.3,  // level of the repetitions, range: 0 - 1
-		bpm = 100,    // BPM of the song, range 40 - 200
-		rep = 4,     // number of repetitions, range 1 - 8
-		tone = 2500,   // tone, low pass filter, range: 1Khz - 6Khz
-
-		// chorus parameters
-		mix = 0,   // mix btw signal and chorus, range: 0 - 1
-		rate = 0.3,    // speed of the modulation, range: 0hz - 1hz
-		depth = 0.5,  // amount of modulation, range: 0.25 - 1 (7ms - 28ms)
-
-		// reverb parameters
-		blend = 0,   // mix btw signal and reverb, range: 0 - 1
-		presence = 6500,  // brightness of the reverb, range: 1Khz - 8Khz
-		decay = 10,   // time decay, range: 0 - 20
-
-		on_off = 0;
-
-		var signal = In.ar(13,2);
-		var output;
-
-		// chorus
-		var chorus_input = LPF.ar(signal, 4000);
-		var lfo_left = (SinOsc.ar(rate) + 1);  // left oscillator
-		var lfo_right = (SinOsc.ar(rate,2) + 1);  // right oscillator
-		var min_delay = 0.007;
-		var max_delay = 0.028*depth;
-		var wet_left = DelayC.ar(chorus_input, 1, lfo_left.linlin(0, 2, min_delay, max_delay));
-		var wet_right = DelayC.ar(chorus_input, 1, lfo_right.linlin(0, 2, min_delay, max_delay));
-		var chorus_output = (signal) + ([wet_left, wet_right]*mix);   // mix
-
-		// delay
-		var delay_input = chorus_output;
-
-		var time_quarter = 60/bpm;  // delay 1/4 after the note
-		var time_octave = 60/(2*bpm);  // delay 1/8 after the note
-		var feedback = rep*time_quarter;   // feedback of the delay in ms, range: 1/4 - 2 bars
-
-		var delay_right = CombL.ar(delay_input, 1, time_quarter, feedback, level);
-		var delay_left = CombL.ar(delay_input, 1, time_octave, feedback, level);
-		var delay_right_lp = LPF.ar(delay_right, tone);
-		var delay_left_lp = LPF.ar(delay_left, tone);
-		var stereo_delay = [delay_left_lp, delay_right_lp];
-		var delay_output = delay_input + stereo_delay;
-
-		// reverb
-		var reverb_input = delay_output;
-		var rev = LPF.ar(reverb_input, presence);
-		var reverb_output;
-
-		// stereo reverb
-		5.do{ rev[0] = AllpassN.ar(rev[0], 0.06, Rand(0.001,0.04), decay+Rand(0,1)) };
-		5.do{ rev[1] = AllpassN.ar(rev[1], 0.06, Rand(0.001,0.04), decay+Rand(0,1)) };
-		reverb_output = (reverb_input) + (rev*blend);
-
-		output = (reverb_output * on_off) + (signal * (1-on_off));
-
-		Out.ar([0,1], output);
-    }).send;
-
+thisProcess.openUDPPort(52000);
+NetAddr("192.168.2.7",52000);
 )
 
-/*
-~synth_wahwah = Synth("wahwah");
-~synth_octaverOC2 = Synth("octaverOC2");
-~synth_octaverM288 = Synth("octaverM288");
-~synth_stereoDelay = Synth("stereoDelay");
-*/
-
+////// PLAY //////
 (
 ~synth_wahwah = Synth("wahwah");
 ~synth_octaverOC2 = Synth.after(~synth_wahwah,"octaverOC2");
@@ -180,7 +50,7 @@ var label_height = 0.022*screen_height;
 
 // Font parameters
 var font_type = "Monaco";
-var font_size = 15;
+var font_size = 13;
 var font_color = Color.white;
 
 // Button parameters
@@ -433,34 +303,34 @@ w.view.decorator.nextLine;
 ~level_knob = Knob(~stereoDelay_view, knob_dim@knob_dim)
 .value_(0.3)
 .action_({ arg obj;
-	       var level = obj.value.round(0.01);
-	       ~synth_stereoDelay.set(\level, level);
-	       ~level_text.string_(20*log(level).round(0.01)+"dB");
-           });
+	var level = obj.value.round(0.01);
+	~synth_stereoDelay.set(\level, level);
+	~level_text.string_(20*log(level).round(0.01)+"dB");
+});
 
 ~time_knob = Knob(~stereoDelay_view, knob_dim@knob_dim)
 .value_(0.375)
 .action_({ arg obj;
-	       var bpm = obj.value.linlin(0,1,40,200).round(1);
-	       ~synth_stereoDelay.set(\bpm, bpm);
-	       ~time_text.value_(bpm);
-           });
+	var bpm = obj.value.linlin(0,1,40,200).round(1);
+	~synth_stereoDelay.set(\bpm, bpm);
+	~time_text.value_(bpm);
+});
 
 ~feedback_knob = Knob(~stereoDelay_view, knob_dim@knob_dim)
 .value_(0.5)
 .action_({ arg obj;
-	       var rep = obj.value.linlin(0,1,0,8).round(1);
-	       ~synth_stereoDelay.set(\rep, rep);
-	       ~feedback_text.string_(rep+"Rep");
-           });
+	var rep = obj.value.linlin(0,1,0,8).round(1);
+	~synth_stereoDelay.set(\rep, rep);
+	~feedback_text.string_(rep+"Rep");
+});
 
 ~tone_knob = Knob(~stereoDelay_view, knob_dim@knob_dim)
 .value_(0.25)
 .action_({ arg obj;
-	       var tone = obj.value.linlin(0,1,1000,7000).round(0.01);
-	       ~synth_stereoDelay.set(\tone, tone);
-	       ~tone_text.string_(tone+"Hz");
-           });
+	var tone = obj.value.linlin(0,1,1000,7000).round(0.01);
+	~synth_stereoDelay.set(\tone, tone);
+	~tone_text.string_(tone+"Hz");
+});
 
 ~stereoDelay_view.decorator.nextLine;
 
@@ -482,8 +352,8 @@ w.view.decorator.nextLine;
 .background_(Color.white)
 .buttonsVisible_(false)
 .action_({ arg obj;
-	       ~time_knob.valueAction_(obj.value.linlin(40,200,0,1));
-          });
+	~time_knob.valueAction_(obj.value.linlin(40,200,0,1));
+});
 ~blank_label = StaticText(~stereoDelay_view, ((knob_dim-comp_view_gap)/2)@text_height)
 .string_("BPM")
 .font_(Font(font_type,font_size-4))
@@ -536,42 +406,43 @@ w.view.decorator.nextLine;
 .states_([ ["CHORUS", font_color, button_off_color], ["CHORUS", font_color, button_on_color] ])
 .font_(Font(font_type,font_size))
 .action_({ arg obj;
-	       if( obj.value == 1,
-		        {~synth_stereoDelay.set(\mix, ~mix_knob.value);
-		        ~mix_knob.enabled_(true);},
+	if( obj.value == 1,
+		{~synth_stereoDelay.set(\mix, ~mix_knob.value);
+			~mix_knob.enabled_(true);},
 
-	            {~synth_stereoDelay.set(\mix, 0);
-		        ~mix_knob.enabled_(false);} );
-           });
+		{~synth_stereoDelay.set(\mix, 0);
+			~mix_knob.enabled_(false);} );
+});
 
 ~mix_knob = Knob(~stereoDelay_view, knob_dim@knob_dim)
 .value_(0.6)
 .enabled_(false)
 .action_({ arg obj;
-	       var mix = obj.value.round(0.01);
-	       ~synth_stereoDelay.set(\mix, mix);
-           });
+	var mix = obj.value.round(0.01);
+	~synth_stereoDelay.set(\mix, mix);
+	~mix_label.string_("MIX"+(mix*100)+"%")
+});
 
 ~rate_knob = Knob(~stereoDelay_view, knob_dim@knob_dim)
 .value_(0.3)
 .action_({ arg obj;
-	       var rate = obj.value.round(0.001);
-	       ~synth_stereoDelay.set(\rate, rate);
-           });
+	var rate = obj.value.round(0.001);
+	~synth_stereoDelay.set(\rate, rate);
+});
 
 ~depth_knob = Knob(~stereoDelay_view, knob_dim@knob_dim)
 .value_(0.625)
 .action_({ arg obj;
-	       var depth = obj.value.obj.value.linlin(0,1,0.25,1).round(0.01);
-	       ~synth_stereoDelay.set(\depth, depth);
-           });
+	var depth = obj.value.obj.value.linlin(0,1,0.25,1).round(0.01);
+	~synth_stereoDelay.set(\depth, depth);
+});
 
 ~stereoDelay_view.decorator.nextLine;
 
 ~blank_label = StaticText(~stereoDelay_view, knob_dim@label_height);
 
 ~mix_label = StaticText(~stereoDelay_view, knob_dim@label_height)
-.string_("MIX")
+.string_("MIX"+(~mix_knob.value.round(0.01)*100)+"%")
 .font_(Font(font_type,font_size))
 .stringColor_(font_color)
 .align_(\center);
@@ -596,43 +467,44 @@ w.view.decorator.nextLine;
 .states_([ ["REVERB", font_color, button_off_color],["REVERB", font_color, button_on_color] ])
 .font_(Font(font_type,font_size))
 .action_({ arg obj;
-	       if( obj.value == 1,
-		        {~synth_stereoDelay.set(\blend, ~blend_knob.value);
-		        ~blend_knob.enabled_(true);},
+	if( obj.value == 1,
+		{~synth_stereoDelay.set(\blend, ~blend_knob.value);
+			~blend_knob.enabled_(true);},
 
-	            {~synth_stereoDelay.set(\blend, 0);
-		        ~blend_knob.enabled_(false);} );
-           });
+		{~synth_stereoDelay.set(\blend, 0);
+			~blend_knob.enabled_(false);} );
+});
 
 ~blend_knob = Knob(~stereoDelay_view, knob_dim@knob_dim)
 .enabled_(false)
 .value_(0.3)
 .action_({ arg obj;
-	       var blend = obj.value.round(0.01);
-	       ~synth_stereoDelay.set(\blend, blend);
-           });
+	var blend = obj.value.round(0.01);
+	~synth_stereoDelay.set(\blend, blend);
+	~blend_label.string_("BLEND"+(blend*100)+"%")
+});
 
 ~presence_knob = Knob(~stereoDelay_view, knob_dim@knob_dim)
 .value_(0.9)
 .action_({ arg obj;
-	       var presence = obj.value.linlin(0,1,1000,8000).round(0.01);
-	       ~synth_stereoDelay.set(\presence, presence);
-           });
+	var presence = obj.value.linlin(0,1,1000,8000).round(0.01);
+	~synth_stereoDelay.set(\presence, presence);
+});
 
 ~decay_knob = Knob(~stereoDelay_view, knob_dim@knob_dim)
 .value_(0.5)
 .action_({ arg obj;
-	       var decay = obj.value.round(0.01);
-	       ~synth_stereoDelay.set(\decay, decay);
-           });
+	var decay = obj.value.round(0.01);
+	~synth_stereoDelay.set(\decay, decay);
+});
 
 ~stereoDelay_view.decorator.nextLine;
 
 ~blank_label = StaticText(~stereoDelay_view, knob_dim@label_height);
 
 ~blend_label = StaticText(~stereoDelay_view, knob_dim@label_height)
-.string_("BLEND")
-.font_(Font(font_type,font_size))
+.string_("BLEND"+(~blend_knob.value.round(0.01)*100)+"%")
+.font_(Font(font_type,(font_size)))
 .stringColor_(font_color)
 .align_(\center);
 

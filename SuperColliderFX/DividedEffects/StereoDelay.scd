@@ -1,11 +1,14 @@
 s.boot;
-o = s.options;
-o.memSize = 2.pow(32);
 
-b = Buffer.read(s,"/Users/alessandro/Desktop/CHORUS.aif");
-
+// Set up the server
 (
-SynthDef.new("stereo_delay",
+thisProcess.openUDPPort(52000);
+NetAddr("192.168.2.7",52000);
+)
+
+////// Synth for the Stereo Delay //////
+(
+~synth_stereoDelay = SynthDef("stereoDelay",
 	{
 		arg
 		// delay parameters
@@ -22,10 +25,13 @@ SynthDef.new("stereo_delay",
 		// reverb parameters
 		blend = 0,   // mix btw signal and reverb, range: 0 - 1
 		presence = 6500,  // brightness of the reverb, range: 1Khz - 8Khz
-		decay = 10;   // time decay, range: 0 - 20
+		decay = 10,   // time decay, range: 0 - 20
 
-		//var signal = In.ar(1);   // input signal from the audio interface
-		var signal = PlayBuf.ar(2, b.bufnum);
+		on_off = 0;
+
+		//var signal = PlayBuf.ar(2, b.bufnum);
+		var signal = In.ar(13,2);
+		var output;
 
 		// chorus
 		var chorus_input = LPF.ar(signal, 4000);
@@ -61,13 +67,16 @@ SynthDef.new("stereo_delay",
 		5.do{ rev[1] = AllpassN.ar(rev[1], 0.06, Rand(0.001,0.04), decay+Rand(0,1)) };
 		reverb_output = (reverb_input) + (rev*blend);
 
-		Out.ar(0, reverb_output);
-		//Out.ar(0, delay_output);
-    }).send;
+		output = (reverb_output * on_off) + (signal * (1-on_off));
+
+		Out.ar([0,1], output);
+}).send;
 )
 
-x = Synth("stereo_delay");
+~synth_stereoDelay = Synth("stereoDelay");
 
+
+////// Graphic //////
 (
 var screen_width = Window.screenBounds.width;
 var screen_height = Window.screenBounds.height;
@@ -91,7 +100,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .value_(0.3)
 .action_({ arg obj;
 	       var level = obj.value.round(0.01);
-	       x.set(\level, level);
+	       ~synth_stereoDelay.set(\level, level);
 	       ~level_text.string_(20*log(level).round(0.01)+"dB");
            });
 
@@ -99,7 +108,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .value_(0.375)
 .action_({ arg obj;
 	       var bpm = obj.value.linlin(0,1,40,200).round(1);
-	       x.set(\bpm, bpm);
+	       ~synth_stereoDelay.set(\bpm, bpm);
 	       ~time_text.value_(bpm);
            });
 
@@ -107,7 +116,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .value_(0.5)
 .action_({ arg obj;
 	       var rep = obj.value.linlin(0,1,0,8).round(1);
-	       x.set(\rep, rep);
+	       ~synth_stereoDelay.set(\rep, rep);
 	       ~feedback_text.string_(rep+"Repetitions");
            });
 
@@ -115,7 +124,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .value_(0.25)
 .action_({ arg obj;
 	       var tone = obj.value.linlin(0,1,1000,7000).round(0.01);
-	       x.set(\tone, tone);
+	       ~synth_stereoDelay.set(\tone, tone);
 	       ~tone_text.string_(tone+"Hz");
            });
 
@@ -158,8 +167,6 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .stringColor_(Color.white)
 .align_(\center);
 
-
-
 ~level_label = StaticText(w, knob_dim@20)
 .string_("LEVEL")
 .font_(Font("Monaco",20))
@@ -191,10 +198,10 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .font_(Font("Monaco",18))
 .action_({ arg obj;
 	       if( obj.value == 1,
-		        {x.set(\mix, ~mix_knob.value);
+		        {~synth_stereoDelay.set(\mix, ~mix_knob.value);
 		        ~mix_knob.enabled_(true);},
 
-	            {x.set(\mix, 0);
+	            {~synth_stereoDelay.set(\mix, 0);
 		        ~mix_knob.enabled_(false);} );
            });
 
@@ -203,7 +210,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .value_(0.6)
 .action_({ arg obj;
 	       var mix = obj.value.round(0.01);
-	       x.set(\mix, mix);
+	       ~synth_stereoDelay.set(\mix, mix);
 	       ~mix_label.string_("MIX"+(mix*100)+"%")
            });
 
@@ -211,14 +218,14 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .value_(0.3)
 .action_({ arg obj;
 	       var rate = obj.value.round(0.001);
-	       x.set(\rate, rate);
+	       ~synth_stereoDelay.set(\rate, rate);
            });
 
 ~depth_knob = Knob(w, knob_dim@knob_dim)
 .value_(0.625)
 .action_({ arg obj;
 	       var depth = obj.value.obj.value.linlin(0,1,0.25,1).round(0.01);
-	       x.set(\depth, depth);
+	       ~synth_stereoDelay.set(\depth, depth);
            });
 
 ~blank_label = StaticText(w, knob_dim@30);
@@ -248,10 +255,10 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .font_(Font("Monaco",18))
 .action_({ arg obj;
 	       if( obj.value == 1,
-		        {x.set(\blend, ~blend_knob.value);
+		        {~synth_stereoDelay.set(\blend, ~blend_knob.value);
 		        ~blend_knob.enabled_(true);},
 
-	            {x.set(\blend, 0);
+	            {~synth_stereoDelay.set(\blend, 0);
 		        ~blend_knob.enabled_(false);} );
            });
 
@@ -260,7 +267,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .value_(0.3)
 .action_({ arg obj;
 	       var blend = obj.value.round(0.01);
-	       x.set(\blend, blend);
+	       ~synth_stereoDelay.set(\blend, blend);
 	       ~blend_label.string_("BLEND"+(blend*100)+"%")
            });
 
@@ -268,14 +275,14 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .value_(0.9)
 .action_({ arg obj;
 	       var presence = obj.value.linlin(0,1,1000,8000).round(0.01);
-	       x.set(\presence, presence);
+	       ~synth_stereoDelay.set(\presence, presence);
            });
 
 ~decay_knob = Knob(w, knob_dim@knob_dim)
 .value_(0.5)
 .action_({ arg obj;
 	       var decay = obj.value.round(0.01);
-	       x.set(\decay, decay);
+	       ~synth_stereoDelay.set(\decay, decay);
            });
 
 ~blank_label = StaticText(w, knob_dim@30);
@@ -300,16 +307,6 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 
 )
 
-
 ServerOptions.outDevices
 o = Server.local.options
 o.outDevice = "Soundflower (2ch)";
-
-
-
-
-
-
-
-
-

@@ -1,35 +1,40 @@
 s.boot;
 
-// simulation of a MXR M288
-
-b = Buffer.read(s,"/Users/lucavilla/Desktop/CLEAN.aif");
-
+// Set up the server
 (
-SynthDef.new("octaverM288",
+thisProcess.openUDPPort(52000);
+NetAddr("192.168.2.7",52000);
+)
+
+////// Synth for the OctaverM288 //////
+(
+~synth_octaverM288 = SynthDef("octaverM288",
 	{
 		arg
 		dry_level = 0.5,      // level of direct input, range 0 - 1
 		growl_level = 0.5,    // level of first octave below, range 0 - 1
 		girth_level = 0.5,    // level of second octave below, range 0 - 1
-		mid_plus_switch = 0;   // select if mid+ switch is clicked, 1 if it is clicked, 0 otherwise
+		mid_plus_switch = 0,   // select if mid+ switch is clicked, 1 if it is clicked, 0 otherwise
+		on_off = 0;
 
-		var signal = PlayBuf.ar(2, b.bufnum)*0.6; //the multiplicative factor is to not exceeded 0dB in output
-		//var signal = In.ar(2);
+		//var signal = PlayBuf.ar(2, b.bufnum);
+		var signal = In.ar(12,2);
 		var signal_octave = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.5);
 		var signal_octave_LPF = LPF.ar(in: signal_octave,freq:220);
-		var growl_signal = BPF.ar(in:signal_octave,freq:200,rq:3,mul:growl_level*2);
-		var girth_signal = BPF.ar(in:signal_octave,freq:100,rq:3,mul:girth_level*1.5);
-
-
+		var growl_signal = BBandPass.ar(in:signal_octave,freq:200,bw:3,mul:growl_level*2);
+		var girth_signal = BBandPass.ar(in:signal_octave,freq:100,bw:3,mul:girth_level*1.5);
 		var mid_plus_signal = BPeakEQ.ar(in:signal,freq:400,rq:2,db:10,mul:mid_plus_switch);
 		var output = (signal*(1-mid_plus_switch) + mid_plus_signal)*dry_level + growl_signal + girth_signal;
 
-		Out.ar([0,1], output);
-    }).send;
+		output = (output * on_off) + (signal * (1-on_off));
+
+		Out.ar([13,14], output);
+}).send;
 )
 
-//x = Synth("octaverM288");
+~synth_octaverM288 = Synth("octaverM288");
 
+////// Graphic //////
 (
 var screen_width = Window.screenBounds.width;
 var screen_height = Window.screenBounds.height;
@@ -52,13 +57,13 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .font_(Font("Monaco",18))
 .action_({arg obj;
 	      if( obj.value == 1,
-		        {x = Synth("octaverM288");
-			     x.set(\dry_level,~dry_level_knob.value.round(0.01));
-				 x.set(\growl_level,~growl_level_knob.value.round(0.01));
-				 x.set(\girth_level,~girth_level_knob.value.round(0.01));
-				 x.set(\mid_plus_switch,~mid_plus_button.value);
+		        {~synth_octaverM288 = Synth("octaverM288");
+			     ~synth_octaverM288.set(\dry_level,~dry_level_knob.value.round(0.01));
+				 ~synth_octaverM288.set(\growl_level,~growl_level_knob.value.round(0.01));
+				 ~synth_octaverM288.set(\girth_level,~girth_level_knob.value.round(0.01));
+				 ~synth_octaverM288.set(\mid_plus_switch,~mid_plus_button.value);
 		        },
-	            {x.free;}
+	            {~synth_octaverM288.free;}
 	        );});
 
 ~blank_label = StaticText(w, 220@30);
@@ -69,15 +74,15 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .value_(0)
 .action_({arg obj;
 	      if( obj.value == 1,
-		        {x.set(\mid_plus_switch,1);},
-	            {x.set(\mid_plus_switch,0);}
+		        {~synth_octaverM288.set(\mid_plus_switch,1);},
+	            {~synth_octaverM288.set(\mid_plus_switch,0);}
 	        );});
 
 ~dry_level_knob = Knob(w, knob_dim@knob_dim)
 .value_(0.5)
 .action_({ arg obj;
 	       var dry_level = obj.value.round(0.01);
-	       x.set(\dry_level, dry_level);
+	       ~synth_octaverM288.set(\dry_level, dry_level);
            });
 
 ~growl_level_knob = Knob(w, knob_dim@knob_dim)
@@ -91,7 +96,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .value_(0.5)
 .action_({ arg obj;
 	       var girth_level = obj.value.round(0.01);
-	       x.set(\girth_level, girth_level);
+	       ~synth_octaverM288.set(\girth_level, girth_level);
            });
 
 ~blank_label = StaticText(w, button_dim@30);
@@ -116,15 +121,5 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 
 w.front;
 
-w.onClose={x.free;};
+w.onClose={~synth_octaverM288.free;};
 )
-
-
-
-
-
-
-
-
-
-

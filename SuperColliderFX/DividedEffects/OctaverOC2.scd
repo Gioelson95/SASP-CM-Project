@@ -1,32 +1,37 @@
 s.boot;
 
-// simulation of a Boss OC2
-
-b = Buffer.read(s,"/Users/lucavilla/Desktop/CLEAN.aif");
-
+// Set up the server
 (
-SynthDef.new("octaverOC2",
+thisProcess.openUDPPort(52000);
+NetAddr("192.168.2.7",52000);
+)
+
+////// Synth for the OctaverOC2 //////
+(
+~synth_octaverOC2 = SynthDef("octaverOC2",
 	{
 		arg
 		direct_level = 0.5,  // level of direct input, range 0 - 1
 		oc1_level = 0.5,     // level of first octave below, range 0 - 1
-		oc2_level = 0.5;     // level of second octave below, range 0 - 1
+		oc2_level = 0.5,     // level of second octave below, range 0 - 1
+		on_off = 0;
 
-		var signal = PlayBuf.ar(2, b.bufnum);
-		//var signal = In.ar(2);
+		//var signal = PlayBuf.ar(2, b.bufnum);
+		var signal = In.ar(10,2);
 		var signal_oc1 = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.5,mul:oc1_level*1.5);
-		var signal_oc2 = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.25,mul:oc2_level*2);
-
+		var signal_oc2 = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.2,mul:oc2_level);
 
 		var output = signal*direct_level + LPF.ar(signal_oc1,440) + LPF.ar(signal_oc2,220);
 
-		Out.ar([0,1], output);
-    }).send;
+		output = (output * on_off) + (signal * (1-on_off));
+
+		Out.ar([12,13], output);
+}).send;
 )
 
-x = Synth("octaverOC2");
+~synth_octaverOC2 = Synth("octaverOC2");
 
-
+////// Graphic //////
 (
 var screen_width = Window.screenBounds.width;
 var screen_height = Window.screenBounds.height;
@@ -45,21 +50,21 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .value_(0.5)
 .action_({ arg obj;
 	       var direct_level = obj.value.round(0.01);
-	       x.set(\direct_level, direct_level);
+	       ~synth_octaverOC2.set(\direct_level, direct_level);
            });
 
 ~oc1_level_knob = Knob(w, knob_dim@knob_dim)
 .value_(0.5)
 .action_({ arg obj;
 	       var oc1_level = obj.value.round(0.01);
-	       x.set(\oc1_level, oc1_level);
+	       ~synth_octaverOC2.set(\oc1_level, oc1_level);
            });
 
 ~oc2_level_knob = Knob(w, knob_dim@knob_dim)
 .value_(0.5)
 .action_({ arg obj;
 	       var oc2_level = obj.value.round(0.01);
-	       x.set(\oc2_level, oc2_level);
+	       ~synth_octaverOC2.set(\oc2_level, oc2_level);
            });
 
 
@@ -81,13 +86,3 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .stringColor_(Color.white)
 .align_(\center);
 )
-
-
-
-
-
-
-
-
-
-

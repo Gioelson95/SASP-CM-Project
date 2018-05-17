@@ -1,32 +1,36 @@
 s.boot;
 
-b = Buffer.read(s,"/Users/alessandro/Desktop/WAHWAH.aif");
-
-//set the server
+// Set up the server
 (
 thisProcess.openUDPPort(52000);
 NetAddr("192.168.2.7",52000);
 )
 
+////// Synth for the WahWah //////
 (
-SynthDef.new("wahwah",
+~synth_wahwah = SynthDef("wahwah",
 	{
 		arg
-		freq = 750;
-		var signal = PlayBuf.ar(2, b.bufnum);
-		//var signal = In.ar(2);
+		freq = 750,
+		on_off = 0;
 
-		var outputFreqBoost = BPeakEQ.ar(in: signal, freq: freq, rq: 0.58, db: 12, mul: 1, add: 0);
+		//var signal = PlayBuf.ar(2, b.bufnum);
+		var signal = In.ar(2,2);
+
+		var outputFreqBoost = BPeakEQ.ar(in: signal, freq: freq.lag(0.5), rq: 0.58, db: 12, mul: 1, add: 0);
 		var outputHPF = HPF.ar(in: outputFreqBoost, freq: freq*0.8);
 		var outputLPF = LPF.ar(in: outputHPF, freq: freq*1.6);
 		var output = outputLPF + outputLPF.distort*0.25;
 
-		Out.ar([0,1], channelsArray:output);
-    }).send;
+		output = (output * on_off) + (signal * (1-on_off));
+
+		Out.ar([10,11], channelsArray:output);
+}).send;
 )
 
-x = Synth("wahwah");
+~synth_wahwah = Synth("wahwah");
 
+////// Graphic //////
 (
 var screen_width = Window.screenBounds.width;
 var screen_height = Window.screenBounds.height;
@@ -47,7 +51,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .value_(0.22)
 .action_({ arg obj;
 	       var freq = obj.value.linlin(inMin:0, inMax:1, outMin:400, outMax:1600).round(1);
-	       x.set(\freq, freq);
+	       ~synth_wahwah.set(\freq, freq);
            });
 
 
@@ -57,30 +61,19 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .align_(\center);
 )
 
+////// OSC Receiver for mobile use //////
 (
+~wahwah_OSC_path = "/mobile1/rotation";
 
 OSCdef('OSCreceiver',
 	{
 		arg msg;
 		var freq;
-
 		freq = msg[1].linlin(inMin:0, inMax:0.5, outMin:400, outMax:1600).round(1);
-		freq.postln;
-		x.set(\freq,freq);
+		~synth_wahwah.set(\freq,freq);
 		Routine{
 			~freq_slider.valueAction_(freq.linlin(400,1600,0,1));
 		}.play(AppClock);
 	},
-	"/mobile1/rotation");
+	~wahwah_OSC_path);
 )
-
-
-// "/mobile1/rotation" for android with Eyw application
-
-
-
-
-
-
-
-
