@@ -1,12 +1,12 @@
 s.boot;
 
-b = Buffer.read(s,"/Users/lucavilla/Desktop/CLEAN.aif");
+b = Buffer.read(s,"/Users/alessandro/Desktop/WAHWAH.aif");
 
 
 //set the server
 (
 thisProcess.openUDPPort(52000);
-NetAddr("172.20.10.2",52000);
+NetAddr("192.168.2.7",52000);
 )
 
 (
@@ -51,6 +51,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 	       x.set(\freq, freq);
            });
 
+
 ~freq_label = StaticText(parent:w, bounds:slider_dim_width@30)
 .string_("FREQUENCE")
 .font_(Font("Monaco",20))
@@ -58,22 +59,18 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 )
 
 (
-var instr; // here we have an instrument
-instr = Synth(\wahwah); //the instrument is simpleSin
 
 OSCdef('OSCreceiver',
 	{
-		arg msg; // we expect to receive a OSC message, which is a vector
+		arg msg;
+		var freq;
 
-		var freq; // we will have two variables: frequency and amplitude (volume)
-
-
-		msg.postln; // this shows the msg: msg[0]=tag, msg[1], msg[2], ... are the actual values
-		freq = msg[1].linlin(inMin:0, inMax:1, outMin:400, outMax:1600).round(1);
+		freq = msg[1].linlin(inMin:0, inMax:0.5, outMin:400, outMax:1600).round(1);
 		freq.postln;
-		instr.set(\freq,freq); // change the frequency and amplitude of our instrument
+		x.set(\freq,freq);
+		//~freq_slider.valueAction_(freq.linlin(400,1600,0,1));
 	},
-	"/hfosc/horizontalmotion"); // defined tag.
+	"/mobile1/rotation");
 )
 
 

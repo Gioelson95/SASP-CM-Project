@@ -78,7 +78,7 @@ var top_padding = (screen_height-win_height)/2;
 
 var knob_dim = 120;
 
-var i = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/SuperColliderFX/blue.png");
+var i = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/SuperColliderFX/DividedEffects/blue.png");
 
 w = Window("Stereo Digital Delay", Rect(left_padding, top_padding, win_width, win_height));
 w.front;

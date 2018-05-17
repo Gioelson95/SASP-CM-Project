@@ -41,7 +41,7 @@ var top_padding = (screen_height-win_height)/2;
 
 var knob_dim = 120;
 
-var i = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/SuperColliderFX/metal.png");
+var i = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/SuperColliderFX/DividedEffects/metal.png");
 
 w = Window("AmpEQ", Rect(left_padding, top_padding, win_width, win_height));
 w.front;
