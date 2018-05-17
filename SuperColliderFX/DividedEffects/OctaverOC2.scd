@@ -86,3 +86,44 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .stringColor_(Color.white)
 .align_(\center);
 )
+
+////// OSC Receiver for mobile use //////
+(
+~octaverOC2_direct_level_OSC_path = "/mobile1/rotation";
+~octaverOC2_oc1_OSC_path = "";
+~octaverOC2_oc2_OSC_path = "";
+~octaverOC2_direct_OSC_num = 1;
+~octaverOC2_oc1_OSC_num = 2;
+~octaverOC2_oc2_OSC_num = 3;
+
+OSCdef('OSCreceiver',
+	{
+		arg msg;
+		var direct_level = msg[~octaverOC2_direct_OSC_num].round(0.01);
+		~synth_octaverOC2.set(\direct_level, direct_level);
+		Routine{
+			~direct_level_knob.valueAction_(direct_level.linlin(400,1600,0,1));
+		}.play(AppClock);
+	},
+	~octaverOC2_direct_OSC_path);
+OSCdef('OSCreceiver',
+	{
+		arg msg;
+		var oc1_level = msg[~octaverOC2_oc1_level_OSC_num].round(0.01);
+		~synth_octaverOC2.set(\oc1_level, oc1_level);
+		Routine{
+			~oc1_level_knob.valueAction_(oc1_level.linlin(400,1600,0,1));
+		}.play(AppClock);
+	},
+	~octaverOC2_oc1_OSC_path);
+OSCdef('OSCreceiver',
+	{
+		arg msg;
+		var oc2_level = msg[~octaverOC2_oc2_level_OSC_num].round(0.01);
+		~synth_octaverOC2.set(\oc2_level, oc2_level);
+		Routine{
+			~oc2_level_knob.valueAction_(oc2_level.linlin(400,1600,0,1));
+		}.play(AppClock);
+	},
+	~octaverOC2_oc2_OSC_path);
+)

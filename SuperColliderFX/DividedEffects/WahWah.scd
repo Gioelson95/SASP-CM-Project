@@ -64,12 +64,12 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 ////// OSC Receiver for mobile use //////
 (
 ~wahwah_OSC_path = "/mobile1/rotation";
+~wahwah_OSC_num = 1;
 
 OSCdef('OSCreceiver',
 	{
 		arg msg;
-		var freq;
-		freq = msg[1].linlin(inMin:0, inMax:0.5, outMin:400, outMax:1600).round(1);
+		var freq = msg[~wahwah_OSC_num].linlin(inMin:0, inMax:0.5, outMin:400, outMax:1600).round(1);
 		~synth_wahwah.set(\freq,freq);
 		Routine{
 			~freq_slider.valueAction_(freq.linlin(400,1600,0,1));
