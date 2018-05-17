@@ -8,16 +8,19 @@ b = Buffer.read(server:s, path:"/Users/gioelepozzi/Desktop/SASP-CM-Project/Audio
 ~synth_wahwah = SynthDef("wahwah",
 	{
 		arg
-		freq = 750;
-		var signal = PlayBuf.ar(2, b.bufnum);
-		//var signal = In.ar(2);
+		freq = 750,
+		on_off = 0;
+		//var signal = PlayBuf.ar(2, b.bufnum);
+		var signal = In.ar(2,2);
 
 		var outputFreqBoost = BPeakEQ.ar(in: signal, freq: freq.lag(0.5), rq: 0.58, db: 12, mul: 1, add: 0);
 		var outputHPF = HPF.ar(in: outputFreqBoost, freq: freq*0.8);
 		var outputLPF = LPF.ar(in: outputHPF, freq: freq*1.6);
 		var output = outputLPF + outputLPF.distort*0.25;
 
-		Out.ar([0,1], channelsArray:output);
+		output = (output * on_off) + (signal * (1-on_off));
+
+		Out.ar([10,11], channelsArray:output);
 }).send;
 
 /////////////// Synth for the Octaver OC2 /////////////////
@@ -26,17 +29,18 @@ b = Buffer.read(server:s, path:"/Users/gioelepozzi/Desktop/SASP-CM-Project/Audio
 		arg
 		direct_level = 0.5,  // level of direct input, range 0 - 1
 		oc1_level = 0.5,     // level of first octave below, range 0 - 1
-		oc2_level = 0.5;     // level of second octave below, range 0 - 1
+		oc2_level = 0.5,     // level of second octave below, range 0 - 1
+		on_off = 0;
 
-		var signal = PlayBuf.ar(2, b.bufnum);
-		//var signal = In.ar(2);
+		var signal = In.ar(10,2);
 		var signal_oc1 = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.5,mul:oc1_level*1.5);
 		var signal_oc2 = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.2,mul:oc2_level);
 
-
 		var output = signal*direct_level + LPF.ar(signal_oc1,440) + LPF.ar(signal_oc2,220);
 
-		Out.ar([0,1], output);
+		output = (output * on_off) + (signal * (1-on_off));
+
+		Out.ar([12,13], output);
 }).send;
 
 /////////////// Synth for the Octaver M288 /////////////////
@@ -46,10 +50,10 @@ b = Buffer.read(server:s, path:"/Users/gioelepozzi/Desktop/SASP-CM-Project/Audio
 		dry_level = 0.5,      // level of direct input, range 0 - 1
 		growl_level = 0.5,    // level of first octave below, range 0 - 1
 		girth_level = 0.5,    // level of second octave below, range 0 - 1
-		mid_plus_switch = 0;   // select if mid+ switch is clicked, 1 if it is clicked, 0 otherwise
+		mid_plus_switch = 0,   // select if mid+ switch is clicked, 1 if it is clicked, 0 otherwise
+		on_off = 0;
 
-		var signal = PlayBuf.ar(2, b.bufnum)*0.6; //the multiplicative factor is to not exceeded 0dB in output
-		//var signal = In.ar(2);
+		var signal = In.ar(12,2);
 		var signal_octave = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.5);
 		var signal_octave_LPF = LPF.ar(in: signal_octave,freq:220);
 		var growl_signal = BBandPass.ar(in:signal_octave,freq:200,bw:3,mul:growl_level*2);
@@ -57,11 +61,13 @@ b = Buffer.read(server:s, path:"/Users/gioelepozzi/Desktop/SASP-CM-Project/Audio
 		var mid_plus_signal = BPeakEQ.ar(in:signal,freq:400,rq:2,db:10,mul:mid_plus_switch);
 		var output = (signal*(1-mid_plus_switch) + mid_plus_signal)*dry_level + growl_signal + girth_signal;
 
-		Out.ar([0,1], output);
+		output = (output * on_off) + (signal * (1-on_off));
+
+		Out.ar([13,14], output);
 }).send;
 
 /////////////// Synth for the Stereo Delay /////////////////
-~synth_stereoDelay = SynthDef("stereoDelay",
+~synth_stereoDelay = SynthDef.new("stereoDelay",
 	{
 		arg
 		// delay parameters
@@ -71,17 +77,19 @@ b = Buffer.read(server:s, path:"/Users/gioelepozzi/Desktop/SASP-CM-Project/Audio
 		tone = 2500,   // tone, low pass filter, range: 1Khz - 6Khz
 
 		// chorus parameters
-		mix = 0.6,   // mix btw signal and chorus, range: 0 - 1
+		mix = 0,   // mix btw signal and chorus, range: 0 - 1
 		rate = 0.3,    // speed of the modulation, range: 0hz - 1hz
 		depth = 0.5,  // amount of modulation, range: 0.25 - 1 (7ms - 28ms)
 
 		// reverb parameters
-		blend = 0.3,   // mix btw signal and reverb, range: 0 - 1
+		blend = 0,   // mix btw signal and reverb, range: 0 - 1
 		presence = 6500,  // brightness of the reverb, range: 1Khz - 8Khz
-		decay = 10;   // time decay, range: 0 - 20
+		decay = 10,   // time decay, range: 0 - 20
 
-		//var signal = In.ar(1);   // input signal from the audio interface
-		var signal = PlayBuf.ar(2, b.bufnum);
+		on_off = 0;
+
+		var signal = In.ar(13,2);
+		var output;
 
 		// chorus
 		var chorus_input = LPF.ar(signal, 4000);
@@ -109,30 +117,34 @@ b = Buffer.read(server:s, path:"/Users/gioelepozzi/Desktop/SASP-CM-Project/Audio
 
 		// reverb
 		var reverb_input = delay_output;
-		var modulator = SinOsc.ar(0.3).linlin(-1,1,0,1.3);
-		var delrd = LocalIn.ar(4);
-		var reverb_output = reverb_input + delrd[[0,1]];
-		var deltimes = [101, 143, 165, 177] * 0.001 - ControlDur.ir;
-		var sig = [reverb_output[0]+reverb_output[1],
-			reverb_output[0]-reverb_output[1],
-			delrd[2]+delrd[3],
-			delrd[2]-delrd[3]];
-		sig = [ sig[0]+sig[2], sig[1]+sig[3], sig[0]-sig[2], sig[1]-sig[3] ];
-		sig = sig * [0.4, 0.37, 0.333, 0.3];
+		var rev = LPF.ar(reverb_input, presence);
+		var reverb_output;
 
+		// stereo reverb
+		5.do{ rev[0] = AllpassN.ar(rev[0], 0.06, Rand(0.001,0.04), decay+Rand(0,1)) };
+		5.do{ rev[1] = AllpassN.ar(rev[1], 0.06, Rand(0.001,0.04), decay+Rand(0,1)) };
+		reverb_output = (reverb_input) + (rev*blend);
 
-		LocalOut.ar(DelayC.ar(sig, deltimes, deltimes));
+		output = (reverb_output * on_off) + (signal * (1-on_off));
 
-		Out.ar(0, reverb_output);
-		//Out.ar(0, delay_output);
-}).send;
+		Out.ar([0,1], output);
+    }).send;
 
 )
 
+/*
 ~synth_wahwah = Synth("wahwah");
 ~synth_octaverOC2 = Synth("octaverOC2");
 ~synth_octaverM288 = Synth("octaverM288");
 ~synth_stereoDelay = Synth("stereoDelay");
+*/
+
+(
+~synth_wahwah = Synth("wahwah");
+~synth_octaverOC2 = Synth.after(~synth_wahwah,"octaverOC2");
+~synth_octaverM288 = Synth.after(~synth_octaverOC2,"octaverM288");
+~synth_stereoDelay = Synth.after(~synth_octaverM288,"stereoDelay");
+)
 
 /////////////////////////////////////////////// GRAPHIC PART //////////////////////////////////////////
 
@@ -207,8 +219,8 @@ w.background_(win_color);
 .font_(Font(name:font_type,size:font_size))
 .action_({arg obj;
 	if( obj.value == 1,
-		{~synth_wahwah = Synth("wahwah");},
-		{~synth_wahwah.free;}
+		{~synth_wahwah.set(\on_off,1);},
+		{~synth_wahwah.set(\on_off,0);}
 );});
 
 
@@ -217,8 +229,8 @@ w.background_(win_color);
 .font_(Font(name:font_type,size:font_size))
 .action_({arg obj;
 	if( obj.value == 1,
-		{~synth_octaverOC2 = Synth("octaverOC2");},
-		{~synth_octaverOC2.free;}
+		{~synth_octaverOC2.set(\on_off,1);},
+		{~synth_octaverOC2.set(\on_off,0);}
 );});
 
 ~on_off_OctaverM288 = Button(~settings_view,(button_setting_width)@button_height)
@@ -226,8 +238,8 @@ w.background_(win_color);
 .font_(Font(name:font_type,size:font_size))
 .action_({arg obj;
 	if( obj.value == 1,
-		{~synth_octaverM288 = Synth("octaverM288");},
-		{~synth_octaverM288.free;}
+		{~synth_octaverM288.set(\on_off,1);},
+		{~synth_octaverM288.set(\on_off,0);}
 );});
 
 ~on_off_stereoDelay = Button(~settings_view,(button_setting_width)@button_height)
@@ -235,8 +247,8 @@ w.background_(win_color);
 .font_(Font(font_type,font_size))
 .action_({arg obj;
 	if( obj.value == 1,
-		{~synth_stereoDelay = Synth("stereoDelay");},
-		{~synth_stereoDelay.free;}
+		{~synth_stereoDelay.set(\on_off,1);},
+		{~synth_stereoDelay.set(\on_off,0);}
 );});
 
 w.view.decorator.nextLine;
