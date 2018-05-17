@@ -2,7 +2,6 @@ s.boot;
 
 b = Buffer.read(s,"/Users/alessandro/Desktop/WAHWAH.aif");
 
-
 //set the server
 (
 thisProcess.openUDPPort(52000);
@@ -68,7 +67,9 @@ OSCdef('OSCreceiver',
 		freq = msg[1].linlin(inMin:0, inMax:0.5, outMin:400, outMax:1600).round(1);
 		freq.postln;
 		x.set(\freq,freq);
-		//~freq_slider.valueAction_(freq.linlin(400,1600,0,1));
+		Routine{
+			~freq_slider.valueAction_(freq.linlin(400,1600,0,1));
+		}.play(AppClock);
 	},
 	"/mobile1/rotation");
 )
