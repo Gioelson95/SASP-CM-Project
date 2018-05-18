@@ -100,9 +100,9 @@ OSCdef('OSCreceiver',
 	{
 		arg msg;
 		var direct_level = msg[~octaverOC2_direct_OSC_num].round(0.01);
-		~synth_octaverOC2.set(\direct_level, direct_level);
+		//~synth_octaverOC2.set(\direct_level, direct_level);
 		Routine{
-			~direct_level_knob.valueAction_(direct_level.linlin(400,1600,0,1));
+			~direct_level_knob.valueAction_(direct_level);
 		}.play(AppClock);
 	},
 	~octaverOC2_direct_OSC_path);
@@ -110,9 +110,9 @@ OSCdef('OSCreceiver',
 	{
 		arg msg;
 		var oc1_level = msg[~octaverOC2_oc1_level_OSC_num].round(0.01);
-		~synth_octaverOC2.set(\oc1_level, oc1_level);
+		//~synth_octaverOC2.set(\oc1_level, oc1_level);
 		Routine{
-			~oc1_level_knob.valueAction_(oc1_level.linlin(400,1600,0,1));
+			~oc1_level_knob.valueAction_(oc1_level);
 		}.play(AppClock);
 	},
 	~octaverOC2_oc1_OSC_path);
@@ -120,9 +120,9 @@ OSCdef('OSCreceiver',
 	{
 		arg msg;
 		var oc2_level = msg[~octaverOC2_oc2_level_OSC_num].round(0.01);
-		~synth_octaverOC2.set(\oc2_level, oc2_level);
+		//~synth_octaverOC2.set(\oc2_level, oc2_level);
 		Routine{
-			~oc2_level_knob.valueAction_(oc2_level.linlin(400,1600,0,1));
+			~oc2_level_knob.valueAction_(oc2_level);
 		}.play(AppClock);
 	},
 	~octaverOC2_oc2_OSC_path);

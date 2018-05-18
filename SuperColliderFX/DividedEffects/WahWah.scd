@@ -70,7 +70,7 @@ OSCdef('OSCreceiver',
 	{
 		arg msg;
 		var freq = msg[~wahwah_OSC_num].linlin(inMin:0, inMax:0.5, outMin:400, outMax:1600).round(1);
-		~synth_wahwah.set(\freq,freq);
+		//~synth_wahwah.set(\freq,freq);
 		Routine{
 			~freq_slider.valueAction_(freq.linlin(400,1600,0,1));
 		}.play(AppClock);
