@@ -310,6 +310,6 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 
 )
 
-ServerOptions.outDevices
+ServerOptions.inDevices
 o = Server.local.options
 o.outDevice = "Soundflower (2ch)";

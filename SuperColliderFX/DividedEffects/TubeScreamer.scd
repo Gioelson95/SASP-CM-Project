@@ -1,4 +1,5 @@
 Server.default.options.outDevice_("Soundflower (2ch)");
+Server.default.options.inDevice_("ONE");
 s.boot;
 
 b = Buffer.read(s,"/Users/alessandro/Desktop/GUIT_NO_AMP.aif");
@@ -13,7 +14,8 @@ SynthDef.new("TubeScreamer",
 		gain = 0.5,   // amount of distortion
 		tone = 723;  // tone of the pedal (low pass)
 
-		var input = PlayBuf.ar(2, b.bufnum);
+		//var input = PlayBuf.ar(2, b.bufnum);
+		var input = In.ar(2);
 
 		var hp_input = HPF.ar(input,720);  // only the mid/high freq are clipped
 
@@ -22,9 +24,9 @@ SynthDef.new("TubeScreamer",
 
 		var dist_output = (LPF.ar(clipped,tone)*0.85) + (input*0.15);  // tone control + clean blend
 
-		var output = (dist_output*on) + input*(1-on);
+		//var output = (dist_output*on) + input*(1-on);
 
-		Out.ar([0,1], output);
+		Out.ar([0,1], dist_output);
 
     }).send;
 )
