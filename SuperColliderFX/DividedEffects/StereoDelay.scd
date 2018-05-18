@@ -1,3 +1,4 @@
+Server.default.options.outDevice_("Soundflower (2ch)");
 s.boot;
 
 // Set up the server
@@ -5,6 +6,8 @@ s.boot;
 thisProcess.openUDPPort(52000);
 NetAddr("192.168.2.7",52000);
 )
+
+b = Buffer.read(s,"/Users/alessandro/Desktop/GUIT_NO_AMP.aif");
 
 ////// Synth for the Stereo Delay //////
 (
@@ -29,9 +32,9 @@ NetAddr("192.168.2.7",52000);
 
 		on_off = 0;
 
-		//var signal = PlayBuf.ar(2, b.bufnum);
-		var signal = In.ar(13,2);
-		var output;
+		var signal = PlayBuf.ar(2, b.bufnum);
+		//var signal = In.ar(13,2);
+		//var output;
 
 		// chorus
 		var chorus_input = LPF.ar(signal, 4000);
@@ -67,9 +70,9 @@ NetAddr("192.168.2.7",52000);
 		5.do{ rev[1] = AllpassN.ar(rev[1], 0.06, Rand(0.001,0.04), decay+Rand(0,1)) };
 		reverb_output = (reverb_input) + (rev*blend);
 
-		output = (reverb_output * on_off) + (signal * (1-on_off));
+		//output = (reverb_output * on_off) + (signal * (1-on_off));
 
-		Out.ar([0,1], output);
+		Out.ar([0,1], reverb_output);
 }).send;
 )
 
