@@ -59,20 +59,20 @@ var button_width = 0.056*screen_width;
 var button_height = 0.033*screen_height;
 var button_setting_width = 0.094*screen_width;
 var button_on_color = Color.red;
-var button_off_color = Color.grey;
+var button_color = Color.grey;
 
 // Text parameters
 var text_height = 0.018*screen_height;
 
 // Background images
 // Alessandro
-/*var tubeScreamer_img = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/TubeScreamer.png");
+var tubeScreamer_img = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/TubeScreamer.png");
 var stereoDelay_img = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/StereoDelay.png");
-var octaverM288_img = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/OctaverM288.png");*/
+var octaverM288_img = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/OctaverM288.png");
 //Gioele
-var tubeScreamer_img = QImage.new("/Users/gioelepozzi/Desktop/SASP-CM-Project/Images/TubeScreamer.png");
+/*var tubeScreamer_img = QImage.new("/Users/gioelepozzi/Desktop/SASP-CM-Project/Images/TubeScreamer.png");
 var stereoDelay_img = QImage.new("/Users/gioelepozzi/Desktop/SASP-CM-Project/Images/StereoDelay.png");
-var octaverM288_img = QImage.new("/Users/gioelepozzi/Desktop/SASP-CM-Project/Images/OctaverM288.png");
+var octaverM288_img = QImage.new("/Users/gioelepozzi/Desktop/SASP-CM-Project/Images/OctaverM288.png");*/
 
 // Initialization of main window
 Window.closeAll;
@@ -95,40 +95,40 @@ w.background_(win_color);
 
 ~settings_view.decorator.nextLine;
 
-~on_off_wahwah = Button(~settings_view,(button_setting_width)@button_height)
-.states_([ ["OFF Wah-Wah", font_color, button_off_color], ["ON Wah-Wah", font_color, button_on_color] ])
+~on_wahwah = Button(~settings_view,(button_setting_width)@button_height)
+.states_([ ["OFF Wah-Wah", font_color, button_color], ["ON Wah-Wah", font_color, button_on_color] ])
 .font_(Font(name:font_type,size:font_size))
 .action_({arg obj;
 	if( obj.value == 1,
-		{~synth_wahwah.set(\on_off,1);},
-		{~synth_wahwah.set(\on_off,0);}
+		{~synth_wahwah.set(\on,1);},
+		{~synth_wahwah.set(\on,0);}
 );});
 
-~on_off_OctaverM288 = Button(~settings_view,(button_setting_width)@button_height)
-.states_([ ["OFF OctaverM288", font_color, button_off_color], ["ON OctaverM288", font_color, button_on_color] ])
+~on_OctaverM288 = Button(~settings_view,(button_setting_width)@button_height)
+.states_([ ["OFF OctaverM288", font_color, button_color], ["ON OctaverM288", font_color, button_on_color] ])
 .font_(Font(name:font_type,size:font_size))
 .action_({arg obj;
 	if( obj.value == 1,
-		{~synth_octaverM288.set(\on_off,1);},
-		{~synth_octaverM288.set(\on_off,0);}
+		{~synth_octaverM288.set(\on,1);},
+		{~synth_octaverM288.set(\on,0);}
 );});
 
-~on_off_tubeScreamer = Button(~settings_view,(button_setting_width)@button_height)
-.states_([ ["OFF Screamer", font_color, button_off_color], ["ON Tube Screamer", font_color, button_on_color] ])
+~on_tubeScreamer = Button(~settings_view,(button_setting_width)@button_height)
+.states_([ ["OFF Screamer", font_color, button_color], ["ON Tube Screamer", font_color, button_on_color] ])
 .font_(Font(name:font_type,size:font_size))
 .action_({arg obj;
 	if( obj.value == 1,
-		{~synth_tubeScreamer.set(\on_off,1);},
-		{~synth_tubeScreamer.set(\on_off,0);}
+		{~synth_tubeScreamer.set(\on,1);},
+		{~synth_tubeScreamer.set(\on,0);}
 );});
 
-~on_off_stereoDelay = Button(~settings_view,(button_setting_width)@button_height)
-.states_([ ["OFF Stereo Delay", font_color, button_off_color], ["ON Stereo Delay", font_color, button_on_color] ])
+~on_stereoDelay = Button(~settings_view,(button_setting_width)@button_height)
+.states_([ ["OFF Stereo Delay", font_color, button_color], ["ON Stereo Delay", font_color, button_on_color] ])
 .font_(Font(font_type,font_size))
 .action_({arg obj;
 	if( obj.value == 1,
-		{~synth_stereoDelay.set(\on_off,1);},
-		{~synth_stereoDelay.set(\on_off,0);}
+		{~synth_stereoDelay.set(\on,1);},
+		{~synth_stereoDelay.set(\on,0);}
 );});
 
 w.view.decorator.nextLine;
@@ -149,7 +149,7 @@ w.view.decorator.nextLine;
 ~octaverM288_view.decorator.nextLine;
 
 ~mid_plus_button = Button(~octaverM288_view,(button_width)@button_height)
-.states_([ ["MID+", font_color, button_off_color], ["MID+", font_color, button_on_color] ])
+.states_([ ["MID+", font_color, button_color], ["MID+", font_color, button_on_color] ])
 .font_(Font(font_type,font_size))
 .value_(0)
 .action_({arg obj;
@@ -181,7 +181,7 @@ w.view.decorator.nextLine;
 
 ~octaverM288_view.decorator.nextLine;
 
-~blank_label = StaticText(~octaverM288_view, (knob_dim/2)@label_height)
+~blank_label = StaticText(~octaverM288_view, (knob_dim)@label_height)
 .string_("")
 .font_(Font(name:font_type,size:font_size));
 
@@ -385,7 +385,7 @@ w.view.decorator.nextLine;
 // chorus controls
 
 ~chorus_switch = Button(~stereoDelay_view, button_width@button_height)
-.states_([ ["CHORUS", font_color, button_off_color], ["CHORUS", font_color, button_on_color] ])
+.states_([ ["CHORUS", font_color, button_color], ["CHORUS", font_color, button_on_color] ])
 .font_(Font(font_type,font_size))
 .action_({ arg obj;
 	if( obj.value == 1,
@@ -445,7 +445,7 @@ w.view.decorator.nextLine;
 // reverb controls
 
 ~reverb_switch = Button(~stereoDelay_view, button_width@button_height)
-.states_([ ["REVERB", font_color, button_off_color],["REVERB", font_color, button_on_color] ])
+.states_([ ["REVERB", font_color, button_color],["REVERB", font_color, button_on_color] ])
 .font_(Font(font_type,font_size))
 .action_({ arg obj;
 	if( obj.value == 1,
@@ -560,7 +560,7 @@ w.view.decorator.nextLine;
 OSCdef('OSCreceiverPhone',
 	{
 		arg msg;
-		var freq = msg[~wahwah_OSC_num].linlin(inMin:(-0.15), inMax:0.04, outMin:400, outMax:1600).round(1);
+		var freq = msg[~wahwah_OSC_num].linlin(inMin:(-0.15), inMax:0.04, outMin:1600, outMax:400).round(1);
 		Routine{
 			~freq_slider.valueAction_(freq.linlin(400,1600,0,1));
 		}.play(AppClock);
@@ -575,8 +575,8 @@ OSCdef.new('OSCreceiverKinect',
 		arg msg;
 
 		Routine{
-			~level_knob.valueAction_(msg[1]);
-			~feedback_knob.valueAction_(msg[2]);
+			~gain_knob.valueAction_(msg[1]);
+			~volume_knob.valueAction_(msg[1].linlin(0,1,1,0.5));
 		}.play(AppClock);
     },
 	\KinectOSC);

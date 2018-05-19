@@ -6,7 +6,7 @@
 	{
 		arg
 		freq = 750,
-		on_off = 0;
+		on = 0;
 
 		var signal = In.ar(2,2);
 
@@ -15,7 +15,7 @@
 		var outputLPF = LPF.ar(in: outputHPF, freq: freq*1.6);
 		var output = outputLPF + outputLPF.distort*0.25;
 
-		output = (output * on_off) + (signal * (1-on_off));
+		output = (output * on) + (signal * (1-on));
 
 		Out.ar([10,11], channelsArray:output);
 }).send;
@@ -52,22 +52,4 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .string_("FREQUENCE")
 .font_(Font("Monaco",20))
 .align_(\center);
-)
-
-////// OSC Receiver for mobile use //////
-(
-~wahwah_OSC_path = "/mobile1/rotation";
-~wahwah_OSC_num = 1;
-
-OSCdef('OSCreceiver',
-	{
-		arg msg;
-		var freq = msg[~wahwah_OSC_num].linlin(inMin:(-0.15), inMax:0.04, outMin:400, outMax:1600).round(1);
-		//~synth_wahwah.set(\freq,freq);
-		msg[1].postln;
-		Routine{
-			~freq_slider.valueAction_(freq.linlin(400,1600,0,1));
-		}.play(AppClock);
-	},
-	~wahwah_OSC_path);
 )

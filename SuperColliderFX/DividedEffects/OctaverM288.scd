@@ -1,10 +1,3 @@
-s.boot;
-
-// Set up the server
-(
-thisProcess.openUDPPort(52000);
-NetAddr("192.168.2.7",52000);
-)
 
 ////// Synth for the OctaverM288 //////
 (
@@ -15,10 +8,9 @@ NetAddr("192.168.2.7",52000);
 		growl_level = 0.5,    // level of first octave below, range 0 - 1
 		girth_level = 0.5,    // level of second octave below, range 0 - 1
 		mid_plus_switch = 0,   // select if mid+ switch is clicked, 1 if it is clicked, 0 otherwise
-		on_off = 0;
+		on = 0;
 
-		//var signal = PlayBuf.ar(2, b.bufnum);
-		var signal = In.ar(12,2);
+		var signal = In.ar(10,2);
 		var signal_octave = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.5);
 		var signal_octave_LPF = LPF.ar(in: signal_octave,freq:220);
 		var growl_signal = BBandPass.ar(in:signal_octave,freq:200,bw:3,mul:growl_level*2);
@@ -26,9 +18,9 @@ NetAddr("192.168.2.7",52000);
 		var mid_plus_signal = BPeakEQ.ar(in:signal,freq:400,rq:2,db:10,mul:mid_plus_switch);
 		var output = (signal*(1-mid_plus_switch) + mid_plus_signal)*dry_level + growl_signal + girth_signal;
 
-		output = (output * on_off) + (signal * (1-on_off));
+		output = (output * on) + (signal * (1-on));
 
-		Out.ar([13,14], output);
+		Out.ar([12,13], output);
 }).send;
 )
 
@@ -52,7 +44,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 
 ~blank_label = StaticText(w, 220@30);
 
-~on_off_button = Button(w,button_dim@button_dim)
+~on_button = Button(w,button_dim@button_dim)
 .states_([ ["OFF", Color.white, Color.red], ["ON", Color.white, Color.green] ])
 .font_(Font("Monaco",18))
 .action_({arg obj;
