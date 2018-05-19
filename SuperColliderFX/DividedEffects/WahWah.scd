@@ -1,9 +1,11 @@
 s.boot;
 
+b = Buffer.read(s,"/Users/gioelepozzi/Desktop/SASP-CM-Project/AudioSamples/WAHWAH.aif");
+
 // Set up the server
 (
 thisProcess.openUDPPort(52000);
-NetAddr("192.168.2.7",52000);
+NetAddr("192.168.43.246",52000);
 )
 
 ////// Synth for the WahWah //////
@@ -12,10 +14,10 @@ NetAddr("192.168.2.7",52000);
 	{
 		arg
 		freq = 750,
-		on_off = 0;
+		on_off = 1;
 
-		//var signal = PlayBuf.ar(2, b.bufnum);
-		var signal = In.ar(2,2);
+		var signal = PlayBuf.ar(2, b.bufnum);
+		//var signal = In.ar(2,2);
 
 		var outputFreqBoost = BPeakEQ.ar(in: signal, freq: freq.lag(0.5), rq: 0.58, db: 12, mul: 1, add: 0);
 		var outputHPF = HPF.ar(in: outputFreqBoost, freq: freq*0.8);
@@ -24,7 +26,7 @@ NetAddr("192.168.2.7",52000);
 
 		output = (output * on_off) + (signal * (1-on_off));
 
-		Out.ar([10,11], channelsArray:output);
+		Out.ar([0,1], channelsArray:output);
 }).send;
 )
 
@@ -69,8 +71,9 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 OSCdef('OSCreceiver',
 	{
 		arg msg;
-		var freq = msg[~wahwah_OSC_num].linlin(inMin:0, inMax:0.5, outMin:400, outMax:1600).round(1);
+		var freq = msg[~wahwah_OSC_num].linlin(inMin:(-0.15), inMax:0.04, outMin:400, outMax:1600).round(1);
 		//~synth_wahwah.set(\freq,freq);
+		msg[1].postln;
 		Routine{
 			~freq_slider.valueAction_(freq.linlin(400,1600,0,1));
 		}.play(AppClock);

@@ -537,3 +537,36 @@ screen_width.postln;
 screen_height.postln;
 
 )
+
+
+/////////////////////////////////////////////// OSC //////////////////////////////////////////
+
+(
+
+~wahwah_OSC_path = "/mobile1/rotation";
+~wahwah_OSC_num = 1;
+
+OSCdef('OSCreceiverPhone',
+	{
+		arg msg;
+		var freq = msg[~wahwah_OSC_num].linlin(inMin:(-0.15), inMax:0.04, outMin:400, outMax:1600).round(1);
+		Routine{
+			~freq_slider.valueAction_(freq.linlin(400,1600,0,1));
+		}.play(AppClock);
+	},
+	~wahwah_OSC_path);
+
+)
+
+(
+OSCdef.new('OSCreceiverKinect',
+	{
+		arg msg;
+
+		Routine{
+			~level_knob.valueAction_(msg[1]);
+			~time_knob.valueAction_(msg[2]);
+		}.play(AppClock);
+    },
+	\KinectOSC);
+)
