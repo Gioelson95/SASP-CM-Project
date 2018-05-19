@@ -6,7 +6,7 @@ s.boot;
 // Set up the server net
 (
 thisProcess.openUDPPort(52000);
-NetAddr("192.168.2.7",52000);
+NetAddr("192.168.43.69",52000);
 )
 
 ////// PLAY //////
@@ -577,6 +577,8 @@ OSCdef.new('OSCreceiverKinect',
 		Routine{
 			~gain_knob.valueAction_(msg[1]);
 			~volume_knob.valueAction_(msg[1].linlin(0,1,1,0.5));
+
+			~level_knob.valueAction_(msg[2]);
 		}.play(AppClock);
     },
 	\KinectOSC);

@@ -15,7 +15,7 @@
 		var outputLPF = LPF.ar(in: outputHPF, freq: freq*1.6);
 		var output = outputLPF + outputLPF.distort*0.25;
 
-		output = (output * on) + (signal * (1-on));
+		output = (output*4 * on) + (signal * (1-on));
 
 		Out.ar([10,11], channelsArray:output);
 }).send;
