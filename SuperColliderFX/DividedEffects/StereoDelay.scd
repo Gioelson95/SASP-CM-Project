@@ -35,8 +35,8 @@ b = Buffer.read(s,"/Users/alessandro/Desktop/GUIT_NO_AMP.aif");
 		on_off = 0;
 
 		//var signal = PlayBuf.ar(2, b.bufnum);
-		var signal = In.ar(2,2);
-		//var output;
+		var signal = In.ar(13,2);
+		var output;
 
 		// chorus
 		var chorus_input = signal;
@@ -72,9 +72,9 @@ b = Buffer.read(s,"/Users/alessandro/Desktop/GUIT_NO_AMP.aif");
 		8.do{ rev[1] = AllpassN.ar(rev[1], 0.06, Rand(0.001,0.04), decay*5) };
 		reverb_output = (reverb_input) + (rev*blend);
 
-		//output = (reverb_output * on_off) + (signal * (1-on_off));
+		output = (reverb_output * on_off) + (signal * (1-on_off));
 
-		Out.ar([0,1], reverb_output*0.75);
+		Out.ar([0,1], output*0.75);
 }).send;
 )
 

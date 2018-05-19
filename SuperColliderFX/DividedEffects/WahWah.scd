@@ -14,10 +14,10 @@ NetAddr("192.168.43.246",52000);
 	{
 		arg
 		freq = 750,
-		on_off = 1;
+		on_off = 0;
 
-		var signal = PlayBuf.ar(2, b.bufnum);
-		//var signal = In.ar(2,2);
+		//var signal = PlayBuf.ar(2, b.bufnum);
+		var signal = In.ar(2,2);
 
 		var outputFreqBoost = BPeakEQ.ar(in: signal, freq: freq.lag(0.5), rq: 0.58, db: 12, mul: 1, add: 0);
 		var outputHPF = HPF.ar(in: outputFreqBoost, freq: freq*0.8);
@@ -26,7 +26,7 @@ NetAddr("192.168.43.246",52000);
 
 		output = (output * on_off) + (signal * (1-on_off));
 
-		Out.ar([0,1], channelsArray:output);
+		Out.ar([10,11], channelsArray:output);
 }).send;
 )
 
