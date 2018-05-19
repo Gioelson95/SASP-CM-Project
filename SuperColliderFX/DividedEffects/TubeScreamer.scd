@@ -5,8 +5,10 @@ s.boot;
 b = Buffer.read(s,"/Users/alessandro/Desktop/GUIT_NO_AMP.aif");
 
 ////// Synth for the OctaverOC2 //////
+
 (
 ~synth_tubeScreamer = SynthDef.new("tubeScreamer",
+
 	{
 		arg
 		on = 0,   // bypass control
@@ -75,13 +77,13 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .stringColor_(Color.white)
 .align_(\center);
 
-~bass_label = StaticText(w, knob_dim@30)
+~tone_label = StaticText(w, knob_dim@30)
 .string_("TONE")
 .font_(Font("Monaco",22))
 .stringColor_(Color.white)
 .align_(\center);
 
-~middle_label = StaticText(w, knob_dim@30)
+~gain_label = StaticText(w, knob_dim@30)
 .string_("GAIN")
 .font_(Font("Monaco",22))
 .stringColor_(Color.white)
@@ -103,3 +105,15 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 
 )
 
+(
+OSCdef.new('OSCreceiverKinect',
+	{
+		arg msg;
+
+		Routine{
+			~gain_knob.valueAction_(msg[1]);
+			~volume_knob.valueAction_(msg[1].linlin(0,1,1,0.5));
+		}.play(AppClock);
+    },
+	\KinectOSC);
+)
