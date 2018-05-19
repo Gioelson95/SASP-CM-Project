@@ -1,8 +1,9 @@
+// set the default I/O
+Server.default.options.outDevice_("Soundflower (2ch)");
+Server.default.options.inDevice_("ONE");
 s.boot;
 
-//b = Buffer.read(s,"/Users/alessandro/Desktop/WAHWAH.aif");
-
-// Set up the server
+// Set up the server net
 (
 thisProcess.openUDPPort(52000);
 NetAddr("192.168.2.7",52000);
@@ -64,9 +65,9 @@ var button_off_color = Color.grey;
 var text_height = 0.018*screen_height;
 
 // Background images
-var tubeScreamer_img = QImage.new("/Users/gioelepozzi/Desktop/SASP-CM-Project/Images/TubeScreamer.png");
-var stereoDelay_img = QImage.new("/Users/gioelepozzi/Desktop/SASP-CM-Project/Images/StereoDelay.png");
-var octaverM288_img = QImage.new("/Users/gioelepozzi/Desktop/SASP-CM-Project/Images/OctaverM288.png");
+var tubeScreamer_img = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/TubeScreamer.png");
+var stereoDelay_img = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/StereoDelay.png");
+var octaverM288_img = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/OctaverM288.png");
 
 // Initialization of main window
 Window.closeAll;
@@ -430,7 +431,6 @@ w.view.decorator.nextLine;
 .action_({ arg obj;
 	var mix = obj.value.round(0.01);
 	~synth_stereoDelay.set(\mix, mix);
-	~mix_label.string_("MIX"+(mix*100)+"%")
 });
 
 ~rate_knob = Knob(~stereoDelay_view, knob_dim@knob_dim)
@@ -452,7 +452,7 @@ w.view.decorator.nextLine;
 ~blank_label = StaticText(~stereoDelay_view, knob_dim@label_height);
 
 ~mix_label = StaticText(~stereoDelay_view, knob_dim@label_height)
-.string_("MIX"+(~mix_knob.value.round(0.01)*100)+"%")
+.string_("MIX")
 .font_(Font(font_type,font_size))
 .stringColor_(font_color)
 .align_(\center);
@@ -491,7 +491,6 @@ w.view.decorator.nextLine;
 .action_({ arg obj;
 	var blend = obj.value.round(0.01);
 	~synth_stereoDelay.set(\blend, blend);
-	~blend_label.string_("BLEND"+(blend*100)+"%")
 });
 
 ~presence_knob = Knob(~stereoDelay_view, knob_dim@knob_dim)
@@ -513,7 +512,7 @@ w.view.decorator.nextLine;
 ~blank_label = StaticText(~stereoDelay_view, knob_dim@label_height);
 
 ~blend_label = StaticText(~stereoDelay_view, knob_dim@label_height)
-.string_("BLEND"+(~blend_knob.value.round(0.01)*100)+"%")
+.string_("BLEND")
 .font_(Font(font_type,(font_size)))
 .stringColor_(font_color)
 .align_(\center);

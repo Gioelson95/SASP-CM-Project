@@ -1,14 +1,6 @@
-s.boot;
-
-b = Buffer.read(s,"/Users/gioelepozzi/Desktop/SASP-CM-Project/AudioSamples/WAHWAH.aif");
-
-// Set up the server
-(
-thisProcess.openUDPPort(52000);
-NetAddr("192.168.43.246",52000);
-)
 
 ////// Synth for the WahWah //////
+
 (
 ~synth_wahwah = SynthDef("wahwah",
 	{
@@ -16,7 +8,6 @@ NetAddr("192.168.43.246",52000);
 		freq = 750,
 		on_off = 0;
 
-		//var signal = PlayBuf.ar(2, b.bufnum);
 		var signal = In.ar(2,2);
 
 		var outputFreqBoost = BPeakEQ.ar(in: signal, freq: freq.lag(0.5), rq: 0.58, db: 12, mul: 1, add: 0);

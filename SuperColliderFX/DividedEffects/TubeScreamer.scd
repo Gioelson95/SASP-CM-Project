@@ -4,7 +4,12 @@ s.boot;
 
 b = Buffer.read(s,"/Users/alessandro/Desktop/GUIT_NO_AMP.aif");
 
-////// Synth for the OctaverOC2 //////
+(
+thisProcess.openUDPPort(52000);
+NetAddr("192.168.2.7",52000);
+)
+
+////// Synth for the TubeScreamer //////
 
 (
 ~synth_tubeScreamer = SynthDef.new("tubeScreamer",
