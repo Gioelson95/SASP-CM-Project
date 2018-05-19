@@ -1,11 +1,9 @@
 import SimpleOpenNI.*;
-import oscP5.*;
-import netP5.*;
+import themidibus.*; 
 
 SimpleOpenNI kinect;
 
-OscP5 oscP5;
-NetAddress myRemoteLocation;
+MidiBus myBus;
 
 void setup() {
   kinect = new SimpleOpenNI(this);
@@ -14,17 +12,17 @@ void setup() {
   size(640, 480);
   fill(255, 0, 0);
   kinect.setMirror(true);
-  
-  /* start oscP5, listening for incoming messages at port 12000 */
-  oscP5 = new OscP5(this,12000);
-  myRemoteLocation = new NetAddress("192.168.43.69",52000); 
+
+  /* start MIDI */
+  MidiBus.list();
+  myBus = new MidiBus(this, -1, "H9 Pedal");
 }
 
 void draw() {
 
   kinect.update();
-  image(kinect.userImage(),0,0);
-  
+  image(kinect.userImage(), 0, 0);
+
   IntVector userList = new IntVector();
   kinect.getUsers(userList);
 
@@ -32,32 +30,30 @@ void draw() {
     int userId = userList.get(0);
     //If we detect one user we have to draw it
     if ( kinect.isTrackingSkeleton(userId)) {
-      
-      PVector torso = tracking(userId,SimpleOpenNI.SKEL_TORSO);
-      
+
+      PVector torso = tracking(userId, SimpleOpenNI.SKEL_TORSO);
+
       float depth = depthNormalized(torso.z);
       float shift = shiftNormalized(torso.x);
-      
-      println("Deepth: "+ depth);
+
+      println("Depth: "+ depth);
       println("Shift: " + shift);
-      
+
       drawSkeleton(userId);
-      
-      //Send OSC message
-      OscMessage myMessage = new OscMessage("/KinectOSC");
-      myMessage.add(depth);
-      myMessage.add(shift);
-      oscP5.send(myMessage,myRemoteLocation);
-      myMessage.print();
+
+      //Send MIDI message
+
+      myBus.sendControllerChange(1, 1, int(depth*127));
+      myBus.sendControllerChange(1, 2, int(shift*127));
     }
   }
 }
 
-float depthNormalized(float depth){
-  float depthNorm = (depth-1450)/1800;
-  if (depthNorm >1){
+float depthNormalized(float depth) {
+  float depthNorm = (depth-1450)/1000;
+  if (depthNorm >1) {
     return 1;
-  }else if (depthNorm <0){
+  } else if (depthNorm <0) {
     return 0;
   }
   return depthNorm;
@@ -73,9 +69,42 @@ float shiftNormalized(float shift){
   return shiftNorm;
 }
 
-PVector tracking(int userId, int bodyPartConstant){
+/*float angle(PVector rightHand, PVector leftHand) {
+  float angle = (rightHand.y - leftHand.y)/(rightHand.x - leftHand.x);
+  angle = (angle - 0.4)/2.2;
+  if (angle >1) {
+    return 1;
+  } else if (angle <0) {
+    return 0;
+  }
+  return angle;
+}
+
+float heightNormalized(PVector head, PVector knee){
+  float high = (head.y - knee.y);
+  high = (high - 800)/200;
+  if (high >1) {
+    return 1;
+  } else if (high <0) {
+    return 0;
+  }
+  return high;
+}
+
+float headNormalized(PVector head){
+  float high = (head.x);
+  high = (high - 800)/200;
+  if (high >1) {
+    return 1;
+  } else if (high <0) {
+    return 0;
+  }
+  return high;
+}*/
+
+PVector tracking(int userId, int bodyPartConstant) {
   PVector bodyPart = new PVector();
-  kinect.getJointPositionSkeleton(userId,bodyPartConstant,bodyPart);
+  kinect.getJointPositionSkeleton(userId, bodyPartConstant, bodyPart);
   PVector convertedBodyPart = new PVector();
   kinect.convertRealWorldToProjective(bodyPart, convertedBodyPart);
   ellipse(convertedBodyPart.x, convertedBodyPart.y, 10, 10);
@@ -85,7 +114,7 @@ PVector tracking(int userId, int bodyPartConstant){
 void drawSkeleton(int userId) {
   stroke(0);
   strokeWeight(5);
-   
+
   kinect.drawLimb(userId, SimpleOpenNI.SKEL_HEAD, SimpleOpenNI.SKEL_NECK);
   kinect.drawLimb(userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_LEFT_SHOULDER);
   kinect.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_LEFT_ELBOW);
@@ -102,10 +131,10 @@ void drawSkeleton(int userId) {
   kinect.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_RIGHT_KNEE);
   kinect.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_KNEE, SimpleOpenNI.SKEL_RIGHT_FOOT);
   kinect.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_LEFT_HIP);
-   
+
   noStroke();
-   
-  fill(255,0,0);
+
+  fill(255, 0, 0);
   drawJoint(userId, SimpleOpenNI.SKEL_HEAD); 
   drawJoint(userId, SimpleOpenNI.SKEL_NECK);
   drawJoint(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER);
@@ -126,11 +155,11 @@ void drawSkeleton(int userId) {
 }
 
 void drawJoint(int userId, int jointID) { 
-PVector joint = new PVector();
- 
-float confidence = kinect.getJointPositionSkeleton(userId, jointID,joint);
-  if(confidence < 0.5){
-    return; 
+  PVector joint = new PVector();
+
+  float confidence = kinect.getJointPositionSkeleton(userId, jointID, joint);
+  if (confidence < 0.5) {
+    return;
   }
   PVector convertedJoint = new PVector();
   kinect.convertRealWorldToProjective(joint, convertedJoint);
@@ -138,11 +167,21 @@ float confidence = kinect.getJointPositionSkeleton(userId, jointID,joint);
 }
 
 //Calibration not required
-void onNewUser(SimpleOpenNI kinect, int userID){
+void onNewUser(SimpleOpenNI kinect, int userID) {
   println("Start tracking");
   kinect.startTrackingSkeleton(userID);
 }
 
-void onLostUser(SimpleOpenNI curContext, int userId){
+void onLostUser(SimpleOpenNI curContext, int userId) {
   println("onLostUser - userId: " + userId);
+}
+
+void controllerChange(int channel, int number, int value) {
+  // Receive a controllerChange
+  println();
+  println("Controller Change:");
+  println("--------");
+  println("Channel:"+channel);
+  println("Number:"+number);
+  println("Value:"+value);
 }
