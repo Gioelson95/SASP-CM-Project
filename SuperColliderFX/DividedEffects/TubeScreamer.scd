@@ -30,13 +30,13 @@
 var screen_width = Window.screenBounds.width;
 var screen_height = Window.screenBounds.height;
 var win_width = 440;
-var win_height = 280;
+var win_height = 290;
 var left_padding = (screen_width-win_width)/2;
 var top_padding = (screen_height-win_height)/2;
 
 var knob_dim = 120;
 
-var i = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/SuperColliderFX/DividedEffects/metal.png");
+var i = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/TubeScreamer.png");
 
 w = Window("TubeScreamer", Rect(left_padding, top_padding, win_width, win_height));
 w.front;
@@ -84,9 +84,9 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .align_(\center);
 
 ~name_label = StaticText(w, knob_dim*2@60)
-.string_("GREEN POLI SCREAMER")
+.string_("GREEN POLISCREAMER")
 .font_(Font("Monaco",22))
-.stringColor_(Color.black)
+.stringColor_(Color.white)
 .align_(\center);
 
 ~switch = Button(w, knob_dim@60)

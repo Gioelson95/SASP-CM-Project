@@ -30,35 +30,21 @@
 (
 var screen_width = Window.screenBounds.width;
 var screen_height = Window.screenBounds.height;
-var win_width = 580;
-var win_height = 320;
+var win_width = 520;
+var win_height = 300;
 var left_padding = (screen_width-win_width)/2;
 var top_padding = (screen_height-win_height)/2;
 
-var knob_dim = 140;
-var button_dim = 60;
+var knob_dim = 120;
+var button_dim = 50;
 
-w = Window("MXR BASS OCTAVE DELUXE", Rect(left_padding, top_padding, win_width, win_height)).front;
-w.background = Color.blue;
+var i = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/OctaverM288.png");
+
+
+w = Window("Octaver", Rect(left_padding, top_padding, win_width, win_height));
+w.front;
+w.view.backgroundImage_(i);
 w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
-
-~blank_label = StaticText(w, 220@30);
-
-~on_button = Button(w,button_dim@button_dim)
-.states_([ ["OFF", Color.white, Color.red], ["ON", Color.white, Color.green] ])
-.font_(Font("Monaco",18))
-.action_({arg obj;
-	      if( obj.value == 1,
-		        {~synth_octaverM288 = Synth("octaverM288");
-			     ~synth_octaverM288.set(\dry_level,~dry_level_knob.value.round(0.01));
-				 ~synth_octaverM288.set(\growl_level,~growl_level_knob.value.round(0.01));
-				 ~synth_octaverM288.set(\girth_level,~girth_level_knob.value.round(0.01));
-				 ~synth_octaverM288.set(\mid_plus_switch,~mid_plus_button.value);
-		        },
-	            {~synth_octaverM288.free;}
-	        );});
-
-~blank_label = StaticText(w, 220@30);
 
 ~mid_plus_button = Button(w,button_dim@button_dim)
 .states_([ ["MID+", Color.white, Color.gray], ["MID+", Color.white, Color.red] ])
@@ -111,7 +97,17 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .stringColor_(Color.white)
 .align_(\center);
 
-w.front;
+~name_label = StaticText(w, (knob_dim*2+button_dim)@60)
+.string_("M288 OCTO-JOE")
+.font_(Font("Monaco",22))
+.stringColor_(Color.white)
+.align_(\center);
 
-w.onClose={~synth_octaverM288.free;};
+~switch = Button(w, knob_dim@60)
+.states_([ ["", Color.white, Color.gray], ["", Color.white, Color.red] ])
+.action_({ arg obj;
+	       if( obj.value == 1,
+		        {~synth_octaverM288.set(\on, 1);},
+	            {~synth_octaverM288.set(\on, 0);} );
+           });
 )
