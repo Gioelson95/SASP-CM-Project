@@ -37,13 +37,14 @@ void draw() {
       PVector rightHand = tracking(userId,SimpleOpenNI.SKEL_RIGHT_HAND);
       PVector torso = tracking(userId,SimpleOpenNI.SKEL_TORSO);
       
-      float angleInRadians = PVector.angleBetween(rightHand, leftHand);
+      float angleInRadians = angle(rightHand, leftHand);
+      //float angleInRadians = PVector.angleBetween(rightHand, leftHand);
       //float angleInDegrees = degrees(angleInRadians);
       
       float depth = depthNormalized(torso.z);
       
-      print("Deepth: "+ depth);
-      print("Angle between hand: "+ angleInRadians);
+      println("Deepth: "+ depth);
+      println("Angle between hand: "+ angleInRadians);
       
       drawSkeleton(userId);
       
@@ -58,13 +59,24 @@ void draw() {
 }
 
 float depthNormalized(float depth){
-  float depthNorm = (depth-700)/4000;
+  float depthNorm = (depth-1450)/1800;
   if (depthNorm >1){
     return 1;
   }else if (depthNorm <0){
     return 0;
   }
   return depthNorm;
+}
+
+float angle(PVector rightHand, PVector leftHand){
+   float angle = (rightHand.y - leftHand.y)/(rightHand.x - leftHand.x);
+   angle = (angle - 0.4)/2.2;
+   if (angle >1){
+    return 1;
+  }else if (angle <0){
+    return 0;
+  }
+  return angle;
 }
 
 PVector tracking(int userId, int bodyPartConstant){
