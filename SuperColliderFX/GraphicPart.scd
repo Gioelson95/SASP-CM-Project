@@ -565,7 +565,7 @@ OSCdef.new('OSCreceiverKinect',
 
 		Routine{
 			~level_knob.valueAction_(msg[1]);
-			~time_knob.valueAction_(msg[2]);
+			~feedback_knob.valueAction_(msg[2]);
 		}.play(AppClock);
     },
 	\KinectOSC);
