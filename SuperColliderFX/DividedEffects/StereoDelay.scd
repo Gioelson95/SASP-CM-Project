@@ -1,4 +1,6 @@
 Server.default.options.outDevice_("Soundflower (2ch)");
+Server.default.options.inDevice_("ONE");
+
 s.boot;
 
 // Set up the server
@@ -32,12 +34,12 @@ b = Buffer.read(s,"/Users/alessandro/Desktop/GUIT_NO_AMP.aif");
 
 		on_off = 0;
 
-		var signal = PlayBuf.ar(2, b.bufnum);
-		//var signal = In.ar(13,2);
+		//var signal = PlayBuf.ar(2, b.bufnum);
+		var signal = In.ar(2,2);
 		//var output;
 
 		// chorus
-		var chorus_input = LPF.ar(signal, 4000);
+		var chorus_input = signal;
 		var lfo_left = (SinOsc.ar(rate) + 1);  // left oscillator
 		var lfo_right = (SinOsc.ar(rate,2) + 1);  // right oscillator
 		var min_delay = 0.007;
@@ -66,13 +68,13 @@ b = Buffer.read(s,"/Users/alessandro/Desktop/GUIT_NO_AMP.aif");
 		var reverb_output;
 
 		// stereo reverb
-		5.do{ rev[0] = AllpassN.ar(rev[0], 0.06, Rand(0.001,0.04), decay+Rand(0,1)) };
-		5.do{ rev[1] = AllpassN.ar(rev[1], 0.06, Rand(0.001,0.04), decay+Rand(0,1)) };
+		8.do{ rev[0] = AllpassN.ar(rev[0], 0.06, Rand(0.001,0.04), decay*5) };
+		8.do{ rev[1] = AllpassN.ar(rev[1], 0.06, Rand(0.001,0.04), decay*5) };
 		reverb_output = (reverb_input) + (rev*blend);
 
 		//output = (reverb_output * on_off) + (signal * (1-on_off));
 
-		Out.ar([0,1], reverb_output);
+		Out.ar([0,1], reverb_output*0.75);
 }).send;
 )
 
@@ -309,7 +311,3 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .align_(\center);
 
 )
-
-ServerOptions.inDevices
-o = Server.local.options
-o.outDevice = "Soundflower (2ch)";

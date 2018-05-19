@@ -10,9 +10,9 @@ SynthDef.new("TubeScreamer",
 		arg
 		on = 0,   // bypass control
 
-		volume = 2,    // volume of the pedal, range: 0 - 4
+		volume = 1,    // volume of the pedal, range: 0 - 2
 		gain = 0.5,   // amount of distortion
-		tone = 723;  // tone of the pedal (low pass)
+		tone = 823;  // tone of the pedal (low pass)
 
 		//var input = PlayBuf.ar(2, b.bufnum);
 		var input = In.ar(2);
@@ -22,11 +22,11 @@ SynthDef.new("TubeScreamer",
 		var clipping = ( hp_input*(((gain**2)+0.02)*50) ).softclip;  // overdrive
 		var clipped = clipping*((volume**2) * (1 - (gain/2.6)));  // volume control
 
-		var dist_output = (LPF.ar(clipped,tone)*0.85) + (input*0.15);  // tone control + clean blend
+		var dist_output = (LPF.ar(clipped,tone)*0.9) + (input*0.1);  // tone control + clean blend
 
-		//var output = (dist_output*on) + input*(1-on);
+		var output = (dist_output*on) + (input*(1-on));
 
-		Out.ar([0,1], dist_output);
+		Out.ar([0,1], output);
 
     }).send;
 )
@@ -54,14 +54,14 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 ~volume_knob = Knob(w, knob_dim@knob_dim)
 .value_(0.5)
 .action_({ arg obj;
-	       var volume = obj.value.linlin(0,1,0,4).round(0.01);
+	       var volume = obj.value.linlin(0,1,0,2).round(0.01);
 	       x.set(\volume, volume);
            });
 
 ~tone_knob = Knob(w, knob_dim@knob_dim)
 .value_(1)
 .action_({ arg obj;
-	       var tone = obj.value.linlin(0,1,200,723).round(0.01);
+	       var tone = obj.value.linlin(0,1,270,823).round(0.01);
 	       x.set(\tone, tone);
            });
 
