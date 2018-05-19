@@ -23,7 +23,7 @@ NetAddr("192.168.2.7",52000);
 // Main window parameters
 var screen_width = Window.screenBounds.width;
 var screen_height = Window.screenBounds.height;
-var win_width = 0.522*screen_width;
+var win_width = 0.493*screen_width;
 var win_height = 0.798*screen_height;
 var left_pad = (screen_width - win_width)/2;
 var top_pad = (screen_height - win_height)/2;
@@ -40,9 +40,9 @@ var knob_dim = 0.056*screen_width;
 var knob_inital_value = 0.5;
 
 // Slider parameters
-var slider_width = 0.035*screen_width;
-var slider_height = 0.056*screen_width;
-var slider_size = 0.017*screen_height;   // dimension of the moving part of the slider
+var slider_width = 0.10*screen_width;
+var slider_height = 0.2*screen_width;
+var slider_size = 0.05*screen_height;   // dimension of the moving part of the slider
 var slider_initial_value = 0.22;
 var slider_color = Color.black;
 
@@ -57,7 +57,7 @@ var font_color = Color.white;
 // Button parameters
 var button_width = 0.056*screen_width;
 var button_height = 0.033*screen_height;
-var button_setting_width = 0.11*screen_width;
+var button_setting_width = 0.094*screen_width;
 var button_on_color = Color.red;
 var button_off_color = Color.grey;
 
@@ -65,9 +65,14 @@ var button_off_color = Color.grey;
 var text_height = 0.018*screen_height;
 
 // Background images
-var tubeScreamer_img = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/TubeScreamer.png");
+// Alessandro
+/*var tubeScreamer_img = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/TubeScreamer.png");
 var stereoDelay_img = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/StereoDelay.png");
-var octaverM288_img = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/OctaverM288.png");
+var octaverM288_img = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/OctaverM288.png");*/
+//Gioele
+var tubeScreamer_img = QImage.new("/Users/gioelepozzi/Desktop/SASP-CM-Project/Images/TubeScreamer.png");
+var stereoDelay_img = QImage.new("/Users/gioelepozzi/Desktop/SASP-CM-Project/Images/StereoDelay.png");
+var octaverM288_img = QImage.new("/Users/gioelepozzi/Desktop/SASP-CM-Project/Images/OctaverM288.png");
 
 // Initialization of main window
 Window.closeAll;
@@ -109,7 +114,7 @@ w.background_(win_color);
 );});
 
 ~on_off_tubeScreamer = Button(~settings_view,(button_setting_width)@button_height)
-.states_([ ["OFF Tube Screamer", font_color, button_off_color], ["ON Tube Screamer", font_color, button_on_color] ])
+.states_([ ["OFF Screamer", font_color, button_off_color], ["ON Tube Screamer", font_color, button_on_color] ])
 .font_(Font(name:font_type,size:font_size))
 .action_({arg obj;
 	if( obj.value == 1,
@@ -128,44 +133,10 @@ w.background_(win_color);
 
 w.view.decorator.nextLine;
 
-/////////////////// WAH-WAH ///////////////////
-
-// WahWah view
-~wahwah_view = CompositeView(parent:w, bounds:(0.054*screen_width)@(0.18*screen_height))
-.background_(Color.black)
-.decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
-
-~wahwah_label = StaticText(parent:~wahwah_view, bounds:Rect(width:75,height:label_height))
-.string_("WahWah")
-.font_(Font(name:font_type,size:font_size))
-.stringColor_(font_color)
-.align(\center);
-
-~wahwah_view.decorator.nextLine;
-
-// Slider for the WahWah effect
-~freq_slider = Slider(parent:~wahwah_view, bounds:Rect(width:slider_width,height:slider_height))
-.thumbSize_(pixels:slider_size)
-.value_(slider_initial_value)
-.background_(slider_color)
-.action_({
-	arg obj;
-	var freq = obj.value.linlin(inMin:0, inMax:1, outMin:400, outMax:1600).round(1);
-	~synth_wahwah.set(\freq, freq);
-});
-
-~wahwah_view.decorator.nextLine;
-
-~freq_label = StaticText(parent:~wahwah_view, bounds:Rect(width:50,height:label_height))
-.string_("FREQ")
-.font_(Font(name:font_type,size:font_size))
-.stringColor_(font_color)
-.align_(\center);
-
 /////////////////// OCTAVER M288 ///////////////////
 
 // OctaverM288 view
-~octaverM288_view = CompositeView(parent:w, bounds:(0.235*screen_width)@(0.18*screen_height))
+~octaverM288_view = CompositeView(parent:w, bounds:(0.265*screen_width)@(0.18*screen_height))
 .backgroundImage_(octaverM288_img)
 .decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
 
@@ -177,7 +148,7 @@ w.view.decorator.nextLine;
 
 ~octaverM288_view.decorator.nextLine;
 
-~mid_plus_button = Button(~octaverM288_view,(button_width/2)@button_height)
+~mid_plus_button = Button(~octaverM288_view,(button_width)@button_height)
 .states_([ ["MID+", font_color, button_off_color], ["MID+", font_color, button_on_color] ])
 .font_(Font(font_type,font_size))
 .value_(0)
@@ -299,7 +270,7 @@ w.view.decorator.nextLine;
 /////////////////// STEREO DELAY ///////////////////
 
 // Stereo Delay view
-~stereoDelay_view = CompositeView(parent:w, bounds:(0.26*screen_width)@(0.47*screen_height))
+~stereoDelay_view = CompositeView(parent:w, bounds:(0.265*screen_width)@(0.47*screen_height))
 .backgroundImage_(stereoDelay_img)
 .decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
 
@@ -529,6 +500,41 @@ w.view.decorator.nextLine;
 .stringColor_(font_color)
 .align_(\center);
 
+/////////////////// WAH-WAH ///////////////////
+
+// WahWah view
+~wahwah_view = CompositeView(parent:w, bounds:(0.20*screen_width)@(0.47*screen_height))
+.background_(Color.black)
+.decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
+
+~wahwah_label = StaticText(parent:~wahwah_view, bounds:(0.3*screen_width-(2*comp_view_margin))@label_height)
+.string_("WahWah")
+.font_(Font(name:font_type,size:font_size))
+.stringColor_(font_color)
+.align(\center);
+
+~wahwah_view.decorator.nextLine;
+
+// Slider for the WahWah effect
+~freq_slider = Slider(parent:~wahwah_view, bounds:Rect(width:slider_width,height:slider_height))
+.thumbSize_(pixels:slider_size)
+.value_(slider_initial_value)
+.background_(slider_color)
+.action_({
+	arg obj;
+	var freq = obj.value.linlin(inMin:0, inMax:1, outMin:400, outMax:1600).round(1);
+	~synth_wahwah.set(\freq, freq);
+});
+
+~wahwah_view.decorator.nextLine;
+
+~freq_label = StaticText(parent:~wahwah_view, bounds:Rect(width:50,height:label_height))
+.string_("FREQ")
+.font_(Font(name:font_type,size:font_size))
+.stringColor_(font_color)
+.align_(\center);
+
+/*
 /////////////////// KINECT ///////////////////
 
 // Kinect view
@@ -541,7 +547,7 @@ w.view.decorator.nextLine;
 .font_(Font(name:font_type,size:font_size))
 .stringColor_(font_color)
 .align(\center);
-
+*/
 )
 
 /////////////////////////////////////////////// OSC //////////////////////////////////////////
