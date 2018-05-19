@@ -11,9 +11,9 @@ NetAddr("192.168.2.7",52000);
 ////// PLAY //////
 (
 ~synth_wahwah = Synth("wahwah");
-~synth_octaverOC2 = Synth.after(~synth_wahwah,"octaverOC2");
-~synth_octaverM288 = Synth.after(~synth_octaverOC2,"octaverM288");
-~synth_stereoDelay = Synth.after(~synth_octaverM288,"stereoDelay");
+~synth_octaverM288 = Synth.after(~synth_wahwah,"octaverM288");
+~synth_tubeScreamer = Synth.after(~synth_octaverM288,"tubeScreamer");
+~synth_stereoDelay = Synth.after(~synth_tubeScreamer,"stereoDelay");
 )
 
 /////////////////////////////////////////////// GRAPHIC PART //////////////////////////////////////////
@@ -22,7 +22,7 @@ NetAddr("192.168.2.7",52000);
 // Main window parameters
 var screen_width = Window.screenBounds.width;
 var screen_height = Window.screenBounds.height;
-var win_width = 0.548*screen_width;
+var win_width = 0.522*screen_width;
 var win_height = 0.798*screen_height;
 var left_pad = (screen_width - win_width)/2;
 var top_pad = (screen_height - win_height)/2;
@@ -63,6 +63,11 @@ var button_off_color = Color.grey;
 // Text parameters
 var text_height = 0.018*screen_height;
 
+// Background images
+var tubeScreamer_img = QImage.new("/Users/gioelepozzi/Desktop/SASP-CM-Project/Images/TubeScreamer.png");
+var stereoDelay_img = QImage.new("/Users/gioelepozzi/Desktop/SASP-CM-Project/Images/StereoDelay.png");
+var octaverM288_img = QImage.new("/Users/gioelepozzi/Desktop/SASP-CM-Project/Images/OctaverM288.png");
+
 // Initialization of main window
 Window.closeAll;
 w = Window(name:"Effects", bounds:Rect(left:left_pad, top:top_pad, width:win_width, height:win_height),resizable:false, border:true, server:s, scroll:false);
@@ -93,16 +98,6 @@ w.background_(win_color);
 		{~synth_wahwah.set(\on_off,0);}
 );});
 
-
-~on_off_OctaverOC2 = Button(~settings_view,(button_setting_width)@button_height)
-.states_([ ["OFF OctaverOC2", font_color, button_off_color], ["ON OctaverOC2", font_color, button_on_color] ])
-.font_(Font(name:font_type,size:font_size))
-.action_({arg obj;
-	if( obj.value == 1,
-		{~synth_octaverOC2.set(\on_off,1);},
-		{~synth_octaverOC2.set(\on_off,0);}
-);});
-
 ~on_off_OctaverM288 = Button(~settings_view,(button_setting_width)@button_height)
 .states_([ ["OFF OctaverM288", font_color, button_off_color], ["ON OctaverM288", font_color, button_on_color] ])
 .font_(Font(name:font_type,size:font_size))
@@ -110,6 +105,15 @@ w.background_(win_color);
 	if( obj.value == 1,
 		{~synth_octaverM288.set(\on_off,1);},
 		{~synth_octaverM288.set(\on_off,0);}
+);});
+
+~on_off_tubeScreamer = Button(~settings_view,(button_setting_width)@button_height)
+.states_([ ["OFF Tube Screamer", font_color, button_off_color], ["ON Tube Screamer", font_color, button_on_color] ])
+.font_(Font(name:font_type,size:font_size))
+.action_({arg obj;
+	if( obj.value == 1,
+		{~synth_tubeScreamer.set(\on_off,1);},
+		{~synth_tubeScreamer.set(\on_off,0);}
 );});
 
 ~on_off_stereoDelay = Button(~settings_view,(button_setting_width)@button_height)
@@ -157,67 +161,11 @@ w.view.decorator.nextLine;
 .stringColor_(font_color)
 .align_(\center);
 
-/////////////////// OCTAVER OC2 ///////////////////
-
-// OctaaverOC2 view
-~octaverOC2_view = CompositeView(parent:w, bounds:(0.2*screen_width)@(0.18*screen_height))
-.background_(Color.fromHexString("742a2a"))
-.decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
-
-~octaverOC2_label = StaticText(parent:~octaverOC2_view, bounds:((0.21*screen_width)-(2*comp_view_margin))@label_height)
-.string_("Octaver OC2")
-.font_(Font(name:font_type,size:font_size))
-.stringColor_(font_color)
-.align_(\center);
-
-~octaverOC2_view.decorator.nextLine;
-
-~direct_level_knob = Knob(~octaverOC2_view, knob_dim@knob_dim)
-.value_(knob_inital_value)
-.action_({ arg obj;
-	var direct_level = obj.value.round(0.01);
-	~synth_octaverOC2.set(\direct_level, direct_level);
-});
-
-~oc1_level_knob = Knob(~octaverOC2_view, knob_dim@knob_dim)
-.value_(knob_inital_value)
-.action_({ arg obj;
-	var oc1_level = obj.value.round(0.01);
-	~synth_octaverOC2.set(\oc1_level, oc1_level);
-});
-
-~oc2_level_knob = Knob(~octaverOC2_view, knob_dim@knob_dim)
-.value_(knob_inital_value)
-.action_({ arg obj;
-	var oc2_level = obj.value.round(0.01);
-	~synth_octaverOC2.set(\oc2_level, oc2_level);
-});
-
-~octaverOC2_view.decorator.nextLine;
-
-~direct_level_label = StaticText(~octaverOC2_view, knob_dim@label_height)
-.string_("DRY")
-.font_(Font(font_type,font_size))
-.stringColor_(font_color)
-.align_(\center);
-
-~oc1_level_label = StaticText(~octaverOC2_view, knob_dim@label_height)
-.string_("OCT1")
-.font_(Font(font_type,font_size))
-.stringColor_(font_color)
-.align_(\center);
-
-~oc2_level_label = StaticText(~octaverOC2_view, knob_dim@label_height)
-.string_("OCT2")
-.font_(Font(font_type,font_size))
-.stringColor_(font_color)
-.align_(\center);
-
 /////////////////// OCTAVER M288 ///////////////////
 
 // OctaverM288 view
-~octaverM288_view = CompositeView(parent:w, bounds:(0.261*screen_width)@(0.18*screen_height))
-.background_(Color.blue)
+~octaverM288_view = CompositeView(parent:w, bounds:(0.235*screen_width)@(0.18*screen_height))
+.backgroundImage_(octaverM288_img)
 .decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
 
 ~octaverM288_label = StaticText(parent:~octaverM288_view, bounds:(0.26*screen_width-(2*comp_view_margin))@label_height)
@@ -228,7 +176,7 @@ w.view.decorator.nextLine;
 
 ~octaverM288_view.decorator.nextLine;
 
-~mid_plus_button = Button(~octaverM288_view,button_width@button_height)
+~mid_plus_button = Button(~octaverM288_view,(button_width/2)@button_height)
 .states_([ ["MID+", font_color, button_off_color], ["MID+", font_color, button_on_color] ])
 .font_(Font(font_type,font_size))
 .value_(0)
@@ -261,7 +209,7 @@ w.view.decorator.nextLine;
 
 ~octaverM288_view.decorator.nextLine;
 
-~blank_label = StaticText(~octaverM288_view, knob_dim@label_height)
+~blank_label = StaticText(~octaverM288_view, (knob_dim/2)@label_height)
 .string_("")
 .font_(Font(name:font_type,size:font_size));
 
@@ -283,13 +231,75 @@ w.view.decorator.nextLine;
 .stringColor_(font_color)
 .align_(\center);
 
+/////////////////// TUBE SCREAMER ///////////////////
+
+// TubeScreamer view
+~tubeScreamer_view = CompositeView(parent:w, bounds:(0.2*screen_width)@(0.18*screen_height))
+.backgroundImage_(tubeScreamer_img)
+.decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
+
+~tubeScreamer_label = StaticText(parent:~tubeScreamer_view, bounds:(0.2*screen_width-(2*comp_view_margin))@label_height)
+.string_("Green Poli Screamer")
+.font_(Font(name:font_type,size:font_size))
+.stringColor_(font_color)
+.align_(\center);
+
+~tubeScreamer_view.decorator.nextLine;
+
+~volume_knob = Knob(~tubeScreamer_view, knob_dim@knob_dim)
+.value_(knob_inital_value)
+.action_({ arg obj;
+	       var volume = obj.value.linlin(0,1,0,2).round(0.01);
+	       ~synth_tubeScreamer.set(\volume, volume);
+           });
+
+~tone_knob = Knob(~tubeScreamer_view, knob_dim@knob_dim)
+.value_(knob_inital_value*2)
+.action_({ arg obj;
+	       var tone = obj.value.linlin(0,1,270,823).round(0.01);
+	       ~synth_tubeScreamer.set(\tone, tone);
+           });
+
+~gain_knob = Knob(~tubeScreamer_view, knob_dim@knob_dim)
+.value_(knob_inital_value)
+.action_({ arg obj;
+	       var gain = obj.value.round(0.01);
+	       ~synth_tubeScreamer.set(\gain, gain);
+           });
+
+~tubeScreamer_view.decorator.nextLine;
+
+~volume_label = StaticText(~tubeScreamer_view, knob_dim@label_height)
+.string_("VOLUME")
+.font_(Font(name:font_type,size:font_size))
+.stringColor_(Color.white)
+.align_(\center);
+
+~bass_label = StaticText(~tubeScreamer_view, knob_dim@label_height)
+.string_("TONE")
+.font_(Font(name:font_type,size:font_size))
+.stringColor_(Color.white)
+.align_(\center);
+
+~middle_label = StaticText(~tubeScreamer_view, knob_dim@label_height)
+.string_("GAIN")
+.font_(Font(name:font_type,size:font_size))
+.stringColor_(Color.white)
+.align_(\center);
+
+~name_label = StaticText(~tubeScreamer_view, knob_dim*2@60)
+.string_("GREEN POLI SCREAMER")
+.font_(Font(name:font_type,size:font_size))
+.stringColor_(Color.black)
+.align_(\center);
+
 w.view.decorator.nextLine;
 
 /////////////////// STEREO DELAY ///////////////////
 
 // Stereo Delay view
 ~stereoDelay_view = CompositeView(parent:w, bounds:(0.26*screen_width)@(0.47*screen_height))
-.background_(Color.blue)
+.backgroundImage_(stereoDelay_img)
 .decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
 
 ~stereoDelay_label = StaticText(parent:~stereoDelay_view, bounds:(0.26*screen_width-(2*comp_view_margin))@label_height)
@@ -523,7 +533,7 @@ w.view.decorator.nextLine;
 /////////////////// KINECT ///////////////////
 
 // Kinect view
-~kinect_view = CompositeView(parent:w, bounds:(0.261*screen_width)@(0.47*screen_height))
+~kinect_view = CompositeView(parent:w, bounds:(0.235*screen_width)@(0.47*screen_height))
 .background_(Color.grey)
 .decorator_(FlowLayout(bounds:w.bounds, margin:comp_view_margin@comp_view_margin, gap:comp_view_gap@comp_view_gap));
 
@@ -533,11 +543,7 @@ w.view.decorator.nextLine;
 .stringColor_(font_color)
 .align(\center);
 
-screen_width.postln;
-screen_height.postln;
-
 )
-
 
 /////////////////////////////////////////////// OSC //////////////////////////////////////////
 

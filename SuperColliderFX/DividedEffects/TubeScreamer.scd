@@ -4,17 +4,14 @@ s.boot;
 
 b = Buffer.read(s,"/Users/alessandro/Desktop/GUIT_NO_AMP.aif");
 
-(
-thisProcess.openUDPPort(52000);
-NetAddr("192.168.43.68",52000);
-)
+////// Synth for the OctaverOC2 //////
 
 (
-SynthDef.new("TubeScreamer",
+~synth_tubeScreamer = SynthDef.new("tubeScreamer",
+
 	{
 		arg
 		on = 0,   // bypass control
-
 		volume = 1,    // volume of the pedal, range: 0 - 2
 		gain = 0.5,   // amount of distortion
 		tone = 823;  // tone of the pedal (low pass)
@@ -23,20 +20,16 @@ SynthDef.new("TubeScreamer",
 		var input = In.ar(2);
 
 		var hp_input = HPF.ar(input,720);  // only the mid/high freq are clipped
-
 		var clipping = ( hp_input*(((gain**2)+0.02)*50) ).softclip;  // overdrive
 		var clipped = clipping*((volume**2) * (1 - (gain/2.6)));  // volume control
-
 		var dist_output = (LPF.ar(clipped,tone)*0.9) + (input*0.1);  // tone control + clean blend
-
 		var output = (dist_output*on) + (input*(1-on));
 
 		Out.ar([0,1], output);
-
     }).send;
 )
 
-x = Synth("TubeScreamer");
+~synth_tubeScreamer = Synth("tubeScreamer");
 
 (
 
@@ -60,21 +53,21 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .value_(0.5)
 .action_({ arg obj;
 	       var volume = obj.value.linlin(0,1,0,2).round(0.01);
-	       x.set(\volume, volume);
+	       ~synth_tubeScreamer.set(\volume, volume);
            });
 
 ~tone_knob = Knob(w, knob_dim@knob_dim)
 .value_(1)
 .action_({ arg obj;
 	       var tone = obj.value.linlin(0,1,270,823).round(0.01);
-	       x.set(\tone, tone);
+	       ~synth_tubeScreamer.set(\tone, tone);
            });
 
 ~gain_knob = Knob(w, knob_dim@knob_dim)
 .value_(0.5)
 .action_({ arg obj;
 	       var gain = obj.value.round(0.01);
-	       x.set(\gain, gain);
+	       ~synth_tubeScreamer.set(\gain, gain);
            });
 
 
@@ -106,8 +99,8 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .states_([ ["", Color.white, Color.gray], ["", Color.white, Color.red] ])
 .action_({ arg obj;
 	       if( obj.value == 1,
-		        {x.set(\on, 1);},
-	            {x.set(\on, 0);} );
+		        {~synth_tubeScreamer.set(\on, 1);},
+	            {~synth_tubeScreamer.set(\on, 0);} );
            });
 
 )
