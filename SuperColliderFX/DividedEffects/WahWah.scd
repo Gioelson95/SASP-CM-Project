@@ -28,7 +28,7 @@
 var screen_width = Window.screenBounds.width;
 var screen_height = Window.screenBounds.height;
 var win_width = 160;
-var win_height = 280;
+var win_height = 360;
 var left_padding = (screen_width - win_width)/2;
 var top_padding = (screen_height - win_height)/2;
 
@@ -52,4 +52,12 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .string_("FREQUENCE")
 .font_(Font("Monaco",20))
 .align_(\center);
+
+~switch = Button(w, 120@60)
+.states_([ ["", Color.white, Color.gray], ["", Color.white, Color.red] ])
+.action_({ arg obj;
+	       if( obj.value == 1,
+		        {~synth_wahwah.set(\on, 1);},
+	            {~synth_wahwah.set(\on, 0);} );
+           });
 )
