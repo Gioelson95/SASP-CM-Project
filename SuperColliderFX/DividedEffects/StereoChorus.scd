@@ -36,14 +36,16 @@
 (
 var screen_width = Window.screenBounds.width;
 var screen_height = Window.screenBounds.height;
-var win_width = 440;
-var win_height = 290;
+var win_width = 700;
+var win_height = 430;
 var left_padding = (screen_width-win_width)/2;
 var top_padding = (screen_height-win_height)/2;
 
-var knob_dim = 120;
+var knob_dim = 200;
 
-var i = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/StereoChorus.png");
+var label_dim = 26;
+
+var i = QImage.new("/Users/alessandro/Desktop/Images/StereoChorus.png");
 
 w = Window("Stereo Chorus", Rect(left_padding, top_padding, win_width, win_height));
 w.front;
@@ -75,31 +77,31 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
            });
 
 
-~mix_label = StaticText(w, knob_dim@30)
+~mix_label = StaticText(w, knob_dim@label_dim)
 .string_("MIX"+(~mix_knob.value.round(0.01)*100)+"%")
-.font_(Font("Monaco",20))
+.font_(Font("Monaco",label_dim))
 .stringColor_(Color.white)
 .align_(\center);
 
-~rate_label = StaticText(w, knob_dim@30)
+~rate_label = StaticText(w, knob_dim@label_dim)
 .string_("RATE")
-.font_(Font("Monaco",20))
+.font_(Font("Monaco",label_dim))
 .stringColor_(Color.white)
 .align_(\center);
 
-~depth_label = StaticText(w, knob_dim@30)
+~depth_label = StaticText(w, knob_dim@label_dim)
 .string_("DEPTH")
-.font_(Font("Monaco",20))
+.font_(Font("Monaco",label_dim))
 .stringColor_(Color.white)
 .align_(\center);
 
-~name_label = StaticText(w, knob_dim*2@60)
+~name_label = StaticText(w, knob_dim*2@90)
 .string_("STEREO POLYCHORUS")
-.font_(Font("Monaco",22))
+.font_(Font("Monaco",30))
 .stringColor_(Color.white)
 .align_(\center);
 
-~switch = Button(w, knob_dim@60)
+~switch = Button(w, knob_dim@(knob_dim/2))
 .states_([ ["", Color.white, Color.gray], ["", Color.white, Color.red] ])
 .action_({ arg obj;
 	       if( obj.value == 1,

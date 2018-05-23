@@ -12,7 +12,7 @@
 
 		on = 0;
 
-		var signal = In.ar(14,2);
+		var signal = In.ar(text,2);
 
 		// delay
 		var delay_input = signal;
@@ -41,14 +41,17 @@
 (
 var screen_width = Window.screenBounds.width;
 var screen_height = Window.screenBounds.height;
-var win_width = 580;
-var win_height = 320;
+var win_width = 900;
+var win_height = 450;
 var left_padding = (screen_width-win_width)/2;
 var top_padding = (screen_height-win_height)/2;
 
-var knob_dim = 120;
+var knob_dim = 200;
 
-var i = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/StereoDelay.png");
+var text = 18;
+var label_dim = 24;
+
+var i = QImage.new("/Users/alessandro/Desktop/Images/StereoDelay.png");
 
 w = Window("Stereo Digital Delay", Rect(left_padding, top_padding, win_width, win_height));
 w.front;
@@ -90,17 +93,18 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
            });
 
 
-~level_text = StaticText(w, knob_dim@14)
+~level_text = StaticText(w, knob_dim@text)
 .string_(20*log(~level_knob.value).round(0.01)+"dB")
-.font_(Font("Monaco",14))
+.font_(Font("Monaco",text))
 .stringColor_(Color.white)
 .align_(\center);
 
-~time_text = NumberBox(w, 60@14)
+~blank_label = StaticText(w, 0@text);
+~time_text = NumberBox(w, 90@text)
 .value_(100)
 .clipLo_(40)
 .clipHi_(200)
-.font_(Font("Monaco",14))
+.font_(Font("Monaco",text))
 .normalColor_(Color.black)
 .stringColor_(Color.black)
 .typingColor_(Color.black)
@@ -110,55 +114,55 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .action_({ arg obj;
 	       ~time_knob.valueAction_(obj.value.linlin(40,200,0,1));
           });
-~blank_label = StaticText(w, 40@14)
+~blank_label = StaticText(w, 62@text)
 .string_("BPM")
-.font_(Font("Monaco",14))
+.font_(Font("Monaco",text))
 .stringColor_(Color.white)
 .align_(\left);
 
-~feedback_text = StaticText(w, knob_dim@14)
+~feedback_text = StaticText(w, knob_dim@text)
 .string_(~feedback_knob.value.linlin(0,1,0,8)+"Repetitions")
-.font_(Font("Monaco",14))
+.font_(Font("Monaco",text))
 .stringColor_(Color.white)
 .align_(\center);
 
-~tone_text = StaticText(w, knob_dim@14)
+~tone_text = StaticText(w, knob_dim@text)
 .string_(~tone_knob.value.linlin(0,1,1000,7000)+"Hz")
-.font_(Font("Monaco",14))
+.font_(Font("Monaco",text))
 .stringColor_(Color.white)
 .align_(\center);
 
-~level_label = StaticText(w, knob_dim@20)
+~level_label = StaticText(w, knob_dim@label_dim)
 .string_("LEVEL")
-.font_(Font("Monaco",20))
+.font_(Font("Monaco",label_dim))
 .stringColor_(Color.white)
 .align_(\center);
 
-~time_label = StaticText(w, knob_dim@20)
+~time_label = StaticText(w, knob_dim@label_dim)
 .string_("TIME")
-.font_(Font("Monaco",20))
+.font_(Font("Monaco",label_dim))
 .stringColor_(Color.white)
 .align_(\center);
 
-~feedback_label = StaticText(w, knob_dim@20)
+~feedback_label = StaticText(w, knob_dim@label_dim)
 .string_("FEEDBACK")
-.font_(Font("Monaco",20))
+.font_(Font("Monaco",label_dim))
 .stringColor_(Color.white)
 .align_(\center);
 
-~tone_label = StaticText(w, knob_dim@20)
+~tone_label = StaticText(w, knob_dim@label_dim)
 .string_("TONE")
-.font_(Font("Monaco",20))
+.font_(Font("Monaco",label_dim))
 .stringColor_(Color.white)
 .align_(\center);
 
-~name_label = StaticText(w, knob_dim*3@60)
+~name_label = StaticText(w, knob_dim*3@(knob_dim/2))
 .string_("STEREO DIGITAL SARTYLEY")
-.font_(Font("Monaco",22))
+.font_(Font("Monaco",30))
 .stringColor_(Color.white)
 .align_(\center);
 
-~switch = Button(w, knob_dim@60)
+~switch = Button(w, knob_dim@(knob_dim/2))
 .states_([ ["", Color.white, Color.gray], ["", Color.white, Color.red] ])
 .action_({ arg obj;
 	       if( obj.value == 1,

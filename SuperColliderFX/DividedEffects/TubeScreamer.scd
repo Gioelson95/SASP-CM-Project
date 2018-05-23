@@ -29,14 +29,16 @@
 
 var screen_width = Window.screenBounds.width;
 var screen_height = Window.screenBounds.height;
-var win_width = 440;
-var win_height = 290;
+var win_width = 700;
+var win_height = 430;
 var left_padding = (screen_width-win_width)/2;
 var top_padding = (screen_height-win_height)/2;
 
-var knob_dim = 120;
+var knob_dim = 200;
 
-var i = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/TubeScreamer.png");
+var label_dim = 26;
+
+var i = QImage.new("/Users/alessandro/Desktop/Images/TubeScreamer.png");
 
 w = Window("TubeScreamer", Rect(left_padding, top_padding, win_width, win_height));
 w.front;
@@ -65,31 +67,31 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
            });
 
 
-~volume_label = StaticText(w, knob_dim@30)
+~volume_label = StaticText(w, knob_dim@label_dim)
 .string_("VOLUME")
-.font_(Font("Monaco",22))
+.font_(Font("Monaco",label_dim))
 .stringColor_(Color.white)
 .align_(\center);
 
-~tone_label = StaticText(w, knob_dim@30)
+~tone_label = StaticText(w, knob_dim@label_dim)
 .string_("TONE")
-.font_(Font("Monaco",22))
+.font_(Font("Monaco",label_dim))
 .stringColor_(Color.white)
 .align_(\center);
 
-~gain_label = StaticText(w, knob_dim@30)
+~gain_label = StaticText(w, knob_dim@label_dim)
 .string_("GAIN")
-.font_(Font("Monaco",22))
+.font_(Font("Monaco",label_dim))
 .stringColor_(Color.white)
 .align_(\center);
 
-~name_label = StaticText(w, knob_dim*2@60)
+~name_label = StaticText(w, knob_dim*2@90)
 .string_("GREEN POLISCREAMER")
-.font_(Font("Monaco",22))
+.font_(Font("Monaco",30))
 .stringColor_(Color.white)
 .align_(\center);
 
-~switch = Button(w, knob_dim@60)
+~switch = Button(w, knob_dim@(knob_dim/2))
 .states_([ ["", Color.white, Color.gray], ["", Color.white, Color.red] ])
 .action_({ arg obj;
 	       if( obj.value == 1,
