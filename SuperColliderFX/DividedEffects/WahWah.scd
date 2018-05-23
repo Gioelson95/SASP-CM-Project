@@ -61,3 +61,17 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 	            {~synth_wahwah.set(\on, 0);} );
            });
 )
+
+////// OSC //////
+
+(
+~smartphone_receiver = OSCdef('OSCreceiverPhone',
+	{
+		arg msg;
+		var freq = msg[1].linlin(inMin:(-0.15), inMax:0.04, outMin:1600, outMax:400).round(1);
+		Routine{
+			~freq_slider.valueAction_(freq.linlin(400,1600,0,1));
+		}.play(AppClock);
+	},
+	"/mobile1/rotation");
+)

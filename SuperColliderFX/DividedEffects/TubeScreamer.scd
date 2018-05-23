@@ -25,6 +25,8 @@
 
 ~synth_tubeScreamer = Synth("tubeScreamer");
 
+////// Graphic //////
+
 (
 
 var screen_width = Window.screenBounds.width;
@@ -99,5 +101,23 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 	            {~synth_tubeScreamer.set(\on, 0);} );
            });
 
+)
+
+////// OSC //////
+
+(
+~kinect_tube_receiver = OSCdef.new('OSCKinectTS',
+	{
+		arg msg;
+
+		Routine{
+			if(~kinect_tube.value == 1,{
+				~gain_knob.valueAction_(msg[1]);
+				~volume_knob.valueAction_(msg[1].linlin(0,1,1,0.5));
+			},{});
+
+		}.play(AppClock);
+	},
+	\KinectOSC);
 )
 
