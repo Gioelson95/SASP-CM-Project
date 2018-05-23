@@ -171,3 +171,20 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
            });
 
 )
+
+////// OSC //////
+
+(
+~kinect_delay_receiver = OSCdef.new('OSCKinectDelay',
+	{
+		arg msg;
+
+		Routine{
+			if(~kinect_delay.value == 1,{
+				~level_knob.valueAction_(msg[1]);
+				~feedback_knob.valueAction_(msg[2]);
+			},{});
+		}.play(AppClock);
+	},
+	\KinectOSC);
+)

@@ -80,10 +80,13 @@ var ctrl_img = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Un
 var stereoDelay_img = QImage.new("/Users/gioelepozzi/Desktop/SASP-CM-Project/Images/StereoDelay.png");
 var octaverM288_img = QImage.new("/Users/gioelepozzi/Desktop/SASP-CM-Project/Images/OctaverM288.png");*/
 
-//var tubeScreamer_img = QImage.new("/Users/lucavilla/Desktop/SASP-CM-Project/Images/TubeScreamer.png");
-//var stereoDelay_img = QImage.new("/Users/lucavilla/Desktop/SASP-CM-Project/Images/StereoDelay.png");
-//var octaverM288_img = QImage.new("/Users/lucavilla/Desktop/SASP-CM-Project/Images/OctaverM288.png");
-//var chorus_img = QImage.new("/Users/alessandro/Desktop/SASP-CM-Project/Images/StereoChorus.png");
+/*var tubeScreamer_img = QImage.new("/Users/lucavilla/Desktop/SASP-CM-Project/Images/TubeScreamer.png");
+var stereoDelay_img = QImage.new("/Users/lucavilla/Desktop/SASP-CM-Project/Images/StereoDelay.png");
+var octaverM288_img = QImage.new("/Users/lucavilla/Desktop/SASP-CM-Project/Images/OctaverM288.png");
+var chorus_img = QImage.new("/Users/lucavilla/Desktop/SASP-CM-Project/Images/StereoChorus.png");
+var wah_img = QImage.new("/Users/lucavilla/Desktop/SASP-CM-Project/Images/WahWah.png");
+var ctrl_img = QImage.new("/Users/lucavilla/Desktop/SASP-CM-Project/Images/Controls.png");*/
+
 
 // Initialization of main window
 Window.closeAll;
@@ -115,11 +118,8 @@ w.background_(win_color);
 			     ~kinect_tube.valueAction_(0);
 			     ~kinect_chorus.valueAction_(0);
 			     ~kinect_delay.valueAction_(0);
-			     ~kinect_octave_receiver = OSCFunc("OSCKinectOctave");
 		        },
-		        {
-			     ~kinect_octave_receiver.free;
-		        }
+		        {}
 	          );
            });
 
@@ -131,11 +131,8 @@ w.background_(win_color);
 			     ~kinect_octave.valueAction_(0);
 			     ~kinect_chorus.valueAction_(0);
 			     ~kinect_delay.valueAction_(0);
-			     ~kinect_tube_receiver = OSCFunc("OSCKinectTS");
 		        },
-		        {
-			     ~kinect_tube_receiver.free;
-		        }
+		        {}
 	          );
            });
 
@@ -147,11 +144,8 @@ w.background_(win_color);
 			     ~kinect_octave.valueAction_(0);
 			     ~kinect_tube.valueAction_(0);
 			     ~kinect_delay.valueAction_(0);
-			     ~kinect_chorus_receiver = OSCFunc("OSCKinectChorus");
 		        },
-		        {
-			     ~kinect_chorus_receiver.free;
-		        }
+		        {}
 	          );
            });
 
@@ -163,11 +157,8 @@ w.background_(win_color);
 			     ~kinect_tube.valueAction_(0);
 			     ~kinect_chorus.valueAction_(0);
 			     ~kinect_octave.valueAction_(0);
-		         ~kinect_delay_receiver = OSCFunc("OSCKinectDelay");
 		        },
-		        {
-			     ~kinect_delay_receiver.free;
-		        }
+		        {}
 	          );
            });
 
@@ -600,32 +591,65 @@ w.view.decorator.nextLine;
 
 (
 
-~wahwah_OSC_path = "/mobile1/rotation";
-~wahwah_OSC_num = 1;
-
-OSCdef('OSCreceiverPhone',
+~smartphone_receiver = OSCdef('OSCreceiverPhone',
 	{
 		arg msg;
-		var freq = msg[~wahwah_OSC_num].linlin(inMin:(-0.15), inMax:0.04, outMin:1600, outMax:400).round(1);
+		var freq = msg[1].linlin(inMin:(-0.15), inMax:0.04, outMin:1600, outMax:400).round(1);
 		Routine{
 			~freq_slider.valueAction_(freq.linlin(400,1600,0,1));
 		}.play(AppClock);
 	},
-	~wahwah_OSC_path);
+	"/mobile1/rotation");
 
-)
-
-(
-OSCdef.new('OSCreceiverKinect',
+~kinect_octave_receiver = OSCdef.new('OSCKinectOctave',
 	{
 		arg msg;
 
 		Routine{
-			~gain_knob.valueAction_(msg[1]);
-			~volume_knob.valueAction_(msg[1].linlin(0,1,1,0.5));
-
-			~level_knob.valueAction_(msg[2]);
+			if(~kinect_octave.value == 1,{
+				~dry_level_knob.valueAction_(msg[1]);
+			},{});
 		}.play(AppClock);
-    },
+	},
+	\KinectOSC);
+
+~kinect_tube_receiver = OSCdef.new('OSCKinectTS',
+	{
+		arg msg;
+
+		Routine{
+			if(~kinect_tube.value == 1,{
+				~gain_knob.valueAction_(msg[1]);
+				~volume_knob.valueAction_(msg[1].linlin(0,1,1,0.5));
+			},{});
+
+		}.play(AppClock);
+	},
+	\KinectOSC);
+
+~kinect_chorus_receiver = OSCdef.new('OSCKinectChorus',
+	{
+		arg msg;
+
+		Routine{
+			if(~kinect_chorus.value == 1,{
+				~rate_knob.valueAction_(msg[1]);
+				~mix_knob.valueAction_(msg[2]);
+			},{});
+		}.play(AppClock);
+	},
+	\KinectOSC);
+
+~kinect_delay_receiver = OSCdef.new('OSCKinectDelay',
+	{
+		arg msg;
+
+		Routine{
+			if(~kinect_delay.value == 1,{
+				~level_knob.valueAction_(msg[1]);
+				~feedback_knob.valueAction_(msg[2]);
+			},{});
+		}.play(AppClock);
+	},
 	\KinectOSC);
 )

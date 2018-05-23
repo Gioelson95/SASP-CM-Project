@@ -109,3 +109,21 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 	            {~synth_stereoChorus.set(\on, 0);} );
            });
 )
+
+////// OSC //////
+
+(
+~kinect_chorus_receiver = OSCdef.new('OSCKinectChorus',
+	{
+		arg msg;
+
+		Routine{
+			if(~kinect_chorus.value == 1,{
+				~rate_knob.valueAction_(msg[1]);
+				~mix_knob.valueAction_(msg[2]);
+			},{});
+		}.play(AppClock);
+	},
+	\KinectOSC);
+)
+

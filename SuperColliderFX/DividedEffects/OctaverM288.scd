@@ -113,3 +113,19 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 	            {~synth_octaverM288.set(\on, 0);} );
            });
 )
+
+////// OSC //////
+
+(
+~kinect_octave_receiver = OSCdef.new('OSCKinectOctave',
+	{
+		arg msg;
+
+		Routine{
+			if(~kinect_octave.value == 1,{
+				~dry_level_knob.valueAction_(msg[1]);
+			},{});
+		}.play(AppClock);
+	},
+	\KinectOSC);
+)
