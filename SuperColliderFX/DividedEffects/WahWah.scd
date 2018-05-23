@@ -27,17 +27,19 @@
 (
 var screen_width = Window.screenBounds.width;
 var screen_height = Window.screenBounds.height;
-var win_width = 160;
-var win_height = 360;
+var win_width = 280;
+var win_height = 615;
 var left_padding = (screen_width - win_width)/2;
 var top_padding = (screen_height - win_height)/2;
 
-var slider_dim_width = 120;
-var slider_dim_height = 200;
+var slider_dim_width = 240;
+var slider_dim_height = 500;
 
+var i = QImage.new("/Users/alessandro/Desktop/Images/WahWah.png");
 
 w = Window("Wah-Wah", Rect(left:left_padding, top:top_padding, width:win_width, height:win_height)).front;
 w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
+w.view.backgroundImage_(i);
 
 ~freq_slider = Slider(parent:w, bounds:slider_dim_width@slider_dim_height)
 .background_(Color.black)
@@ -48,12 +50,13 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
            });
 
 
-~freq_label = StaticText(parent:w, bounds:slider_dim_width@30)
-.string_("FREQUENCE")
-.font_(Font("Monaco",20))
+~freq_label = StaticText(parent:w, bounds:130@30)
+.string_("SGNAH SGNAH")
+.font_(Font("Monaco",18))
+.stringColor_(Color.white)
 .align_(\center);
 
-~switch = Button(w, 120@60)
+~switch = Button(w, 90@60)
 .states_([ ["", Color.white, Color.gray], ["", Color.white, Color.red] ])
 .action_({ arg obj;
 	       if( obj.value == 1,

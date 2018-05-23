@@ -30,15 +30,17 @@
 (
 var screen_width = Window.screenBounds.width;
 var screen_height = Window.screenBounds.height;
-var win_width = 520;
-var win_height = 300;
+var win_width = 800;
+var win_height = 430;
 var left_padding = (screen_width-win_width)/2;
 var top_padding = (screen_height-win_height)/2;
 
-var knob_dim = 120;
-var button_dim = 50;
+var knob_dim = 200;
+var button_dim = 80;
 
-var i = QImage.new("/Users/alessandro/OneDrive - Politecnico di Milano/Università/Quarto Anno/Computer Music/SASP-CM-Project/Images/OctaverM288.png");
+var label_dim = 26;
+
+var i = QImage.new("/Users/alessandro/Desktop/Images/OctaverM288.png");
 
 
 w = Window("Octaver", Rect(left_padding, top_padding, win_width, win_height));
@@ -48,7 +50,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 
 ~mid_plus_button = Button(w,button_dim@button_dim)
 .states_([ ["MID+", Color.white, Color.gray], ["MID+", Color.white, Color.red] ])
-.font_(Font("Monaco",18))
+.font_(Font("Monaco",20))
 .value_(0)
 .action_({arg obj;
 	      if( obj.value == 1,
@@ -81,29 +83,29 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 
 ~dry_level_label = StaticText(w, knob_dim@30)
 .string_("DRY")
-.font_(Font("Monaco",20))
+.font_(Font("Monaco",label_dim))
 .stringColor_(Color.white)
 .align_(\center);
 
 ~growl_level_label = StaticText(w, knob_dim@30)
 .string_("GROWL")
-.font_(Font("Monaco",20))
+.font_(Font("Monaco",label_dim))
 .stringColor_(Color.white)
 .align_(\center);
 
 ~girth_level_label = StaticText(w, knob_dim@30)
 .string_("GIRTH")
-.font_(Font("Monaco",20))
+.font_(Font("Monaco",label_dim))
 .stringColor_(Color.white)
 .align_(\center);
 
-~name_label = StaticText(w, (knob_dim*2+button_dim)@60)
+~name_label = StaticText(w, (knob_dim*2+button_dim)@90)
 .string_("M288 OCTO-JOE")
-.font_(Font("Monaco",22))
+.font_(Font("Monaco",30))
 .stringColor_(Color.white)
 .align_(\center);
 
-~switch = Button(w, knob_dim@60)
+~switch = Button(w, knob_dim@(knob_dim/2))
 .states_([ ["", Color.white, Color.gray], ["", Color.white, Color.red] ])
 .action_({ arg obj;
 	       if( obj.value == 1,
