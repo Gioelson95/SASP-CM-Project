@@ -122,9 +122,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 		arg msg;
 
 		Routine{
-			if(~kinect_octave.value == 1,{
-				~dry_level_knob.valueAction_(msg[1]);
-			},{});
+			~dry_level_knob.valueAction_(msg[1]);
 		}.play(AppClock);
 	},
 	\KinectOSC);

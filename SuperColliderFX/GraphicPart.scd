@@ -9,13 +9,18 @@ thisProcess.openUDPPort(52000);
 NetAddr("192.168.43.69",52000);
 )
 
+/*(
+thisProcess.openUDPPort(52000);
+NetAddr("127.0.0.1",52000);
+)*/
+
 ////// PLAY //////
 (
 ~synth_wahwah = Synth("wahwah");
 ~synth_octaverM288 = Synth.after(~synth_wahwah,"octaverM288");
 ~synth_tubeScreamer = Synth.after(~synth_octaverM288,"tubeScreamer");
 ~synth_chorus = Synth.after(~synth_tubeScreamer,"stereoChorus");
-~synth_stereoDelay = Synth.after(~synth_tubeScreamer,"stereoDelay");
+~synth_stereoDelay = Synth.after(~synth_chorus,"stereoDelay");
 )
 
 /////////////////////////////////////////////// GRAPHIC PART //////////////////////////////////////////
@@ -304,7 +309,7 @@ w.view.decorator.nextLine;
 .value_(0.6)
 .action_({ arg obj;
 	       var mix = obj.value.round(0.01);
-	       ~synth_stereoChorus.set(\mix, mix);
+	       ~synth_chorus.set(\mix, mix);
 	       ~mix_label.string_("MIX"+(mix*100)+"%")
            });
 
@@ -312,14 +317,14 @@ w.view.decorator.nextLine;
 .value_(0.3)
 .action_({ arg obj;
 	       var rate = obj.value.round(0.001);
-	       ~synth_stereoChorus.set(\rate, rate);
+	       ~synth_chorus.set(\rate, rate);
            });
 
 ~depth_knob = Knob(~chorus_view, knob_dim@knob_dim)
 .value_(0.625)
 .action_({ arg obj;
-	       var depth = obj.value.obj.value.linlin(0,1,0.25,1).round(0.01);
-	       ~synth_stereoChorus.set(\depth, depth);
+	       var depth = obj.value.linlin(0,1,0.25,1).round(0.01);
+	       ~synth_chorus.set(\depth, depth);
            });
 
 ~chorus_view.decorator.nextLine;

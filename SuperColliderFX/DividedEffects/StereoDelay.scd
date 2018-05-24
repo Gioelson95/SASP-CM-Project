@@ -12,7 +12,7 @@
 
 		on = 0;
 
-		var signal = In.ar(text,2);
+		var signal = In.ar(16,2);
 
 		// delay
 		var delay_input = signal;
@@ -180,10 +180,8 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 		arg msg;
 
 		Routine{
-			if(~kinect_delay.value == 1,{
 				~level_knob.valueAction_(msg[1]);
 				~feedback_knob.valueAction_(msg[2]);
-			},{});
 		}.play(AppClock);
 	},
 	\KinectOSC);

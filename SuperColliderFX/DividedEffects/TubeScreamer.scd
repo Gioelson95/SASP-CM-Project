@@ -111,11 +111,8 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 		arg msg;
 
 		Routine{
-			if(~kinect_tube.value == 1,{
 				~gain_knob.valueAction_(msg[1]);
 				~volume_knob.valueAction_(msg[1].linlin(0,1,1,0.5));
-			},{});
-
 		}.play(AppClock);
 	},
 	\KinectOSC);

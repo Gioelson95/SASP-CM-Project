@@ -25,7 +25,7 @@
 
 		var output = (chorus_output * on) + (signal * (1-on));
 
-		Out.ar([0,1], output);
+		Out.ar([16,17], output);
 }).send;
 )
 
@@ -72,7 +72,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 ~depth_knob = Knob(w, knob_dim@knob_dim)
 .value_(0.625)
 .action_({ arg obj;
-	       var depth = obj.value.obj.value.linlin(0,1,0.25,1).round(0.01);
+	       var depth = obj.value.linlin(0,1,0.25,1).round(0.01);
 	       ~synth_stereoChorus.set(\depth, depth);
            });
 
@@ -118,10 +118,8 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 		arg msg;
 
 		Routine{
-			if(~kinect_chorus.value == 1,{
 				~rate_knob.valueAction_(msg[1]);
 				~mix_knob.valueAction_(msg[2]);
-			},{});
 		}.play(AppClock);
 	},
 	\KinectOSC);
