@@ -6,7 +6,7 @@ s.boot;
 // Set up the server net
 (
 thisProcess.openUDPPort(52000);
-NetAddr("192.168.43.69",52000);
+NetAddr("192.168.2.5",52000);
 )
 
 /*(

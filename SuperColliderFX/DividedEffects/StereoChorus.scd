@@ -11,7 +11,7 @@
 		rate = 0.3,    // speed of the modulation, range: 0hz - 1hz
 		depth = 0.5;  // amount of modulation, range: 0.25 - 1 (7ms - 28ms)
 
-		var signal = In.ar(14,2);
+		var signal = In.ar(2,2);
 
 		// chorus
 		var chorus_input = signal;
@@ -25,7 +25,7 @@
 
 		var output = (chorus_output * on) + (signal * (1-on));
 
-		Out.ar([16,17], output);
+		Out.ar([0,1], output);
 }).send;
 )
 

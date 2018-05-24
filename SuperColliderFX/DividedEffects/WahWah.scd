@@ -17,7 +17,7 @@
 
 		output = (output*4 * on) + (signal * (1-on));
 
-		Out.ar([10,11], channelsArray:output);
+		Out.ar([0,1], channelsArray:output);
 }).send;
 )
 
@@ -71,10 +71,11 @@ w.view.backgroundImage_(i);
 ~smartphone_receiver = OSCdef('OSCreceiverPhone',
 	{
 		arg msg;
-		var freq = msg[1].linlin(inMin:(-0.15), inMax:0.04, outMin:1600, outMax:400).round(1);
+		var freq = msg[1].linlin(inMin:(-0.05), inMax:0.005, outMin:1600, outMax:400).round(1);
 		Routine{
 			~freq_slider.valueAction_(freq.linlin(400,1600,0,1));
 		}.play(AppClock);
+		msg.postln;
 	},
 	"/mobile1/rotation");
 )

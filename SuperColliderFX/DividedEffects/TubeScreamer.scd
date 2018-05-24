@@ -11,7 +11,7 @@
 		gain = 0.5,   // amount of distortion
 		tone = 823;  // tone of the pedal (low pass)
 
-		var input = In.ar(12,2);
+		var input = In.ar(2,2);
 
 		var hp_input = HPF.ar(input,720);  // only the mid/high freq are clipped
 		var clipping = ( hp_input*(((gain**2)+0.02)*50) ).softclip;  // overdrive
@@ -19,7 +19,7 @@
 		var dist_output = (LPF.ar(clipped,tone)*0.9) + (input*0.1);  // tone control + clean blend
 		var output = (dist_output*on) + (input*(1-on));
 
-		Out.ar([14,15], output);
+		Out.ar([0,1], output);
     }).send;
 )
 
@@ -112,7 +112,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 
 		Routine{
 				~gain_knob.valueAction_(msg[1]);
-				~volume_knob.valueAction_(msg[1].linlin(0,1,1,0.5));
+				~volume_knob.valueAction_(msg[1].linlin(0,1,1,0.65));
 		}.play(AppClock);
 	},
 	\KinectOSC);

@@ -12,7 +12,7 @@
 
 		on = 0;
 
-		var signal = In.ar(16,2);
+		var signal = In.ar(2,2);
 
 		// delay
 		var delay_input = signal;
@@ -157,7 +157,7 @@ w.view.decorator_(FlowLayout(w.bounds, 20@20, 20@20));
 .align_(\center);
 
 ~name_label = StaticText(w, knob_dim*3@(knob_dim/2))
-.string_("STEREO DIGITAL SARTYLEY")
+.string_("STEREO DIGITAL DELAY")
 .font_(Font("Monaco",30))
 .stringColor_(Color.white)
 .align_(\center);
