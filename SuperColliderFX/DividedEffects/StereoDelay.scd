@@ -12,7 +12,7 @@
 
 		on = 0;
 
-		var signal = In.ar(2,2);
+		var signal = In.ar(16,2);
 
 		// delay
 		var delay_input = signal;

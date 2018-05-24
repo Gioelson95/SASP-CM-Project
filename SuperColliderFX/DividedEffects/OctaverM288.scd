@@ -10,7 +10,7 @@
 		mid_plus_switch = 0,   // select if mid+ switch is clicked, 1 if it is clicked, 0 otherwise
 		on = 0;
 
-		var signal = In.ar(2,2);
+		var signal = In.ar(10,2);
 		var signal_octave = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.5);
 		var signal_octave_LPF = LPF.ar(in: signal_octave,freq:220);
 		var growl_signal = BBandPass.ar(in:signal_octave,freq:200,bw:3,mul:growl_level*2);
@@ -20,7 +20,7 @@
 
 		output = (output * on) + (signal * (1-on));
 
-		Out.ar([0,1], output);
+		Out.ar([12,13], output);
 }).send;
 )
 

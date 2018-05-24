@@ -17,7 +17,7 @@
 
 		output = (output*4 * on) + (signal * (1-on));
 
-		Out.ar([0,1], channelsArray:output);
+		Out.ar([10,11], channelsArray:output);
 }).send;
 )
 
