@@ -5,22 +5,22 @@
 	{
 		arg
 		dry_level = 0.5,      // level of direct input, range 0 - 1
-		growl_level = 0.5,    // level of first octave below, range 0 - 1
-		girth_level = 0.5,    // level of second octave below, range 0 - 1
-		mid_plus_switch = 0,   // select if mid+ switch is clicked, 1 if it is clicked, 0 otherwise
-		on = 0;
+		growl_level = 0.5,    // level of mid-frequency of octave below, range 0 - 1
+		girth_level = 0.5,    // level of low-frequency of octave below, range 0 - 1
+		mid_plus_switch = 0,  // mid+ switch, 1 if it is clicked, 0 otherwise
+		on = 0;               // on/off switch, 1 if the effect is active, 0 otherwise
 
-		var signal = In.ar(10,2);
-		var signal_octave = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.5);
-		var signal_octave_LPF = LPF.ar(in: signal_octave,freq:220);
-		var growl_signal = BBandPass.ar(in:signal_octave,freq:200,bw:3,mul:growl_level*2);
-		var girth_signal = BBandPass.ar(in:signal_octave,freq:100,bw:3,mul:girth_level*1.5);
-		var mid_plus_signal = BPeakEQ.ar(in:signal,freq:400,rq:2,db:10,mul:mid_plus_switch);
-		var output = (signal*(1-mid_plus_switch) + mid_plus_signal) + ((growl_signal + girth_signal)*dry_level*1.5);
+		var signal = In.ar(2,2);  // read stereo input from bus 2 and 3
+		var signal_octave = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.5);  // create the signal one octave below
+		var signal_octave_LPF = LPF.ar(in: signal_octave,freq:220);  // filter the dropped signal to remove high frequency
+		var growl_signal = BBandPass.ar(in:signal_octave,freq:200,bw:3,mul:growl_level*2);  // filter the mid-frequency of dropped signal
+		var girth_signal = BBandPass.ar(in:signal_octave,freq:100,bw:3,mul:girth_level*1.5);  // filter the low-frequency of the dropped signal
+		var mid_plus_signal = BPeakEQ.ar(in:signal,freq:400,rq:2,db:10,mul:mid_plus_switch);  // increase the mid-frequency of the original signal
+		var output = (signal*(1-mid_plus_switch) + mid_plus_signal) + ((growl_signal + girth_signal)*dry_level*1.5);  // sum all the signal
 
-		output = (output * on) + (signal * (1-on));
+		output = (output * on) + (signal * (1-on));  // select the output according the on/off button
 
-		Out.ar([12,13], output);
+		Out.ar([0,1], output);  //send the signal to bus 0 and 1
 }).send;
 )
 
