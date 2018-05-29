@@ -82,8 +82,8 @@
 				</div>
 				<div class="col-lg-6 order-lg-1">
 					<div class="p-5">
-						<h2 class="display-4">Project focus</h2>
-						<p>Focus of the project is to simulate some guitar effect and control them by the movement of the body tracked by some sensors like Micrisoft Kinect and smatphone ones.</p>
+						<h2 class="display-4">Project Focus</h2>
+						<p>Our project aims at control different guitar effects like Delay, Chorus and Wah-Wah using the movement of the musician’s body, tracked by a Microsoft Kinect and a rotation sensor like the one embedded in modern smartphones. We managed to control effects developed by us with SuperCollider and also others included in the amazing H9 by Eventide, using MIDI messages. </p>
 					</div>
 				</div>
 			</div>
@@ -104,12 +104,13 @@
 				</div>
 				<div class="col-lg-6">
 					<div class="p-5">
-						<h2 class="display-4">Sofware used</h2>
-						<p> Effects are written using
-							<a href="https://supercollider.github.io/" target="_blank">Supercollider</a> and controlled by OSC message passing throught
-							<a href="https://processing.org/" target="_blank">Processing</a>. To make the guitar sound more realistic have been used the
-							<a href="https://www.apple.com/it/logic-pro/" target="_blank">Logic Pro X</a> amp simulation with the help of
-							<a href="https://github.com/mattingalls/Soundflower" target="_blank">Soundflower</a> to connect the audio bus from Supercollider to Logic Pro X.</p>
+						<h2 class="display-4">Sofware & Technologies Used</h2>
+						<p> We developed 5 different effects using <a href="https://supercollider.github.io/" target="_blank">SuperCollider</a>, starting from the knowledge acquired in Computer Music and SASP courses and analyzing some of the best and most famous guitar effects ever made, like the Cry Baby Wah-Wah and the Ibanez Tube Screamer. <br><br>
+                            
+                            Delay, Chorus, Overdrive and Octaver are controlled with the movement. Microsoft Kinect sends the data about the position of the musician to <a href="https://processing.org/" target="_blank">Processing</a>, which converts them in <a href="http://opensoundcontrol.org/introduction-osc" target="_blank">OSC</a> messages, sent over the net to Super Collider. For example you can control the amount of Gain and Volume of the Overdrive simply moving back and forth. A real Wah-Wah is controlled with the movement of the foot, so we use the rotation sensor of the smartphone to track this movement and then, with the help of <a href="https://play.google.com/store/apps/details?id=org.infomus.android.sensors_to_osc" target="_blank">EywSensorToOSC</a>, the information are converted in OSC messages and sent directly to SuperCollider.<br><br>
+                            
+                            The signal chain in relatively simple, the guitar is connected straight to the Audio Interface, then the sound is processed by Super Collider and finally sent to <a href="https://www.apple.com/it/logic-pro/" target="_blank">Logic Pro X</a> through <a href="https://github.com/mattingalls/Soundflower" target="_blank">SoundFlower</a>, set with a simulation of a guitar amplifier.                        
+                        </p>
 					</div>
 				</div>
 			</div>
@@ -130,8 +131,8 @@
 				</div>
 				<div class="col-lg-6 order-lg-1">
 					<div class="p-5">
-						<h2 class="display-4">Possible developments</h2>
-						<p>Future imlpementations in order to improve the project could be a more detailed skeleton recognition using Microsoft Kinect and a greather movement recognition using machine learning.</p>
+						<h2 class="display-4">Possible Developments</h2>
+						<p>In the future, in order to improve the project, we will implement a more detailed skeleton tracking, in addition to a system of movement classification and recognition based on Machine Learning (with the help of Wekinator for example). We will also design new effects.</p>
 					</div>
 				</div>
 			</div>
@@ -154,7 +155,7 @@
 			</a>
 		</div>
 
-		<div class="container" style="width: 60">
+		<div class="container" style="width:60%">
 			<p class="m-0 text-center text-white small">Contact us</p>
 			<p class="m-0 text-center text-white small">
 				<a href="mailto:alessandro1.proverbio@mail.polimi.it">Alessandro Proverbio</a>

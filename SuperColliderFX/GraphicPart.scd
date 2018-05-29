@@ -283,7 +283,7 @@ w.view.decorator.nextLine;
 ~stereoDelay_view.decorator.nextLine;
 
 ~name_label = StaticText(~stereoDelay_view, knob_dim*3@label_height)
-.string_("STEREO DIGITAL SARTYLEY")
+.string_("STEREO DIGITAL DELAY")
 .font_(Font(font_type,font_size_name))
 .stringColor_(font_color)
 .align_(\center);
