@@ -101,6 +101,45 @@
             <div style="height: 0;overflow: hidden;padding-bottom: 56.25%;position: relative">
                 <iframe width="100%" height="100%" src="https://www.youtube.com/embed/RUH-pkpRQU8" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
             </div>
+            <br>
+            <div>
+                <pre style="background: #f4f4f4;
+                            border: 1px solid #ddd;
+                            border-left: 3px solid #f36d33;
+                            color: dimgray;
+                            page-break-inside: avoid;
+                            font-family: monospace;
+                            font-size: 15px;
+                            line-height: 1.6;
+                            margin-bottom: 1.6em;
+                            max-width: 100%;
+                            overflow: auto;
+                            padding: 1em 1.5em;
+                            display: block;
+                            word-wrap: break-word;"><code>
+    ~synth_octaverM288 = SynthDef("octaverM288",
+    {
+    arg
+    dry_level = 0.5,      // level of direct input, range 0 - 1
+    growl_level = 0.5,    // level of first octave below, range 0 - 1
+    girth_level = 0.5,    // level of second octave below, range 0 - 1
+    mid_plus_switch = 0,   // select if mid+ switch is clicked, 1 if it is clicked, 0 otherwise
+    on = 0;
+
+    var signal = In.ar(10,2);
+    var signal_octave = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.5);
+    var signal_octave_LPF = LPF.ar(in: signal_octave,freq:220);
+    var growl_signal = BBandPass.ar(in:signal_octave,freq:200,bw:3,mul:growl_level*2);
+    var girth_signal = BBandPass.ar(in:signal_octave,freq:100,bw:3,mul:girth_level*1.5);
+    var mid_plus_signal = BPeakEQ.ar(in:signal,freq:400,rq:2,db:10,mul:mid_plus_switch);
+    var output = (signal*(1-mid_plus_switch) + mid_plus_signal) + ((growl_signal + girth_signal)*dry_level*1.5);
+
+    output = (output * on) + (signal * (1-on));
+
+    Out.ar([12,13], output);
+    }).send;
+                </code></pre>
+            </div>
         </div>
     </section>
 
@@ -179,40 +218,40 @@
             </div>
         </div>
     </section>
-    
+
     <br>
     <br>
 
     <!-- Footer -->
     <footer class="py-5 bg-black" style="bottom: 0; width: 100%">
 
-		<div class="container" style="float: left; width: 20%; text-align: center">
-			<a href="https://www.polimi.it/" target="_blank">
+        <div class="container" style="float: left; width: 20%; text-align: center">
+            <a href="https://www.polimi.it/" target="_blank">
 				<img class="img-fluid" src="../img/logo_poli.png">
 			</a>
-		</div>
+        </div>
 
-		<div class="container" style="float: right; width: 20%; text-align: center">
-			<a href="http://ispg.deib.polimi.it/" target="_blank">
+        <div class="container" style="float: right; width: 20%; text-align: center">
+            <a href="http://ispg.deib.polimi.it/" target="_blank">
 				<img class="img-fluid" src="../img/ISPG.jpg">
 			</a>
-		</div>
+        </div>
 
-		<div class="container" style="width: 60%">
-			<p class="m-0 text-center text-white small">Contact us</p>
-			<p class="m-0 text-center text-white small">
-				<a href="mailto:alessandro1.proverbio@mail.polimi.it">Alessandro Proverbio</a>
-			</p>
-			<p class="m-0 text-center text-white small">
-				<a href="mailto:gioele.pozzi@mail.polimi.it">Gioele Pozzi</a>
-			</p>
-			<p class="m-0 text-center text-white small">
-				<a href="mailto:luca13.villa@mail.polimi.it">Luca Villa</a>
-			</p>
-		</div>
+        <div class="container" style="width: 60%">
+            <p class="m-0 text-center text-white small">Contact us</p>
+            <p class="m-0 text-center text-white small">
+                <a href="mailto:alessandro1.proverbio@mail.polimi.it">Alessandro Proverbio</a>
+            </p>
+            <p class="m-0 text-center text-white small">
+                <a href="mailto:gioele.pozzi@mail.polimi.it">Gioele Pozzi</a>
+            </p>
+            <p class="m-0 text-center text-white small">
+                <a href="mailto:luca13.villa@mail.polimi.it">Luca Villa</a>
+            </p>
+        </div>
 
-		<!-- /.container -->
-	</footer>
+        <!-- /.container -->
+    </footer>
 
     <!-- Bootstrap core JavaScript -->
     <script src="../vendor/jquery/jquery.min.js"></script>
