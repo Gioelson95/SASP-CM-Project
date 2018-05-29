@@ -102,21 +102,51 @@
                 <iframe width="100%" height="100%" src="https://www.youtube.com/embed/RUH-pkpRQU8" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
             </div>
             <br>
+
+            <script>
+                function changeOctaver() {
+                    var x = document.getElementById("completeCodeOctaver");
+                    var show = document.getElementById("showOctaver");
+                    var hide = document.getElementById("hideOctaver");
+                    if (x.style.display === "none") {
+                        x.style.display = "block";
+                        show.style.display = "none";
+                        hide.style.display = "block";
+                    } else {
+                        x.style.display = "none";
+                        show.style.display = "block";
+                        hide.style.display = "none";
+                    }
+                }
+            </script>
+
             <div>
+                <a id="showOctaver" onclick="changeOctaver()" style="color: blue; cursor: pointer; font-style: italic; font-size: 150%">
+                    Click here to see the SuperCollider code
+                </a>
+                <a id="hideOctaver" onclick="changeOctaver()" style="color: blue; cursor: pointer; font-style: italic; font-size: 150%; display: none">
+                    Click here to hide the SuperCollider code
+                </a>
+            </div>
+
+
+            <div id="completeCodeOctaver" style="display:none">
+
                 <pre style="background: #f4f4f4;
                             border: 1px solid #ddd;
                             border-left: 3px solid #f36d33;
                             color: dimgray;
                             page-break-inside: avoid;
                             font-family: monospace;
-                            font-size: 15px;
+                            font-size: 12px;
                             line-height: 1.6;
                             margin-bottom: 1.6em;
                             max-width: 100%;
                             overflow: auto;
                             padding: 1em 1.5em;
                             display: block;
-                            word-wrap: break-word;"><code>
+                            word-wrap: break-word;">
+                            <code >
     ~synth_octaverM288 = SynthDef("octaverM288",
     {
     arg
@@ -165,6 +195,75 @@
             <div style="height: 0;overflow: hidden;padding-bottom: 56.25%;position: relative">
                 <iframe width="100%" height="100%" src="https://www.youtube.com/embed/Ya6N56-TsXQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
             </div>
+            <br>
+
+            <script>
+                function changeTS() {
+                    var x = document.getElementById("completeCodeTS");
+                    var show = document.getElementById("showTS");
+                    var hide = document.getElementById("hideTS");
+                    if (x.style.display === "none") {
+                        x.style.display = "block";
+                        show.style.display = "none";
+                        hide.style.display = "block";
+                    } else {
+                        x.style.display = "none";
+                        show.style.display = "block";
+                        hide.style.display = "none";
+                    }
+                }
+            </script>
+
+            <div>
+                <a id="showTS" onclick="changeTS()" style="color: blue; cursor: pointer; font-style: italic; font-size: 150%">
+                    Click here to see the SuperCollider code
+                </a>
+                <a id="hideTS" onclick="changeTS()" style="color: blue; cursor: pointer; font-style: italic; font-size: 150%; display: none">
+                    Click here to hide the SuperCollider code
+                </a>
+            </div>
+
+
+            <div id="completeCodeTS" style="display:none">
+
+                <pre style="background: #f4f4f4;
+                            border: 1px solid #ddd;
+                            border-left: 3px solid #f36d33;
+                            color: dimgray;
+                            page-break-inside: avoid;
+                            font-family: monospace;
+                            font-size: 12px;
+                            line-height: 1.6;
+                            margin-bottom: 1.6em;
+                            max-width: 100%;
+                            overflow: auto;
+                            padding: 1em 1.5em;
+                            display: block;
+                            word-wrap: break-word;">
+                            <code >
+    ~synth_octaverM288 = SynthDef("octaverM288",
+    {
+    arg
+    dry_level = 0.5,      // level of octave, range 0 - 1
+    growl_level = 0.5,    // mid control, range 0 - 1
+    girth_level = 0.5,    // bass control, range 0 - 1
+    mid_plus_switch = 0,   // select if mid+ switch is clicked, 1 if it is clicked, 0 otherwise
+    on = 0;
+
+    var signal = In.ar(10,2);
+    var signal_octave = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.5);
+    var signal_octave_LPF = LPF.ar(in: signal_octave,freq:220);
+    var growl_signal = BBandPass.ar(in:signal_octave,freq:200,bw:3,mul:growl_level*2);
+    var girth_signal = BBandPass.ar(in:signal_octave,freq:100,bw:3,mul:girth_level*1.5);
+    var mid_plus_signal = BPeakEQ.ar(in:signal,freq:400,rq:2,db:10,mul:mid_plus_switch);
+    var output = (signal*(1-mid_plus_switch) + mid_plus_signal) + ((growl_signal + girth_signal)*dry_level*1.5);
+
+    output = (output * on) + (signal * (1-on));
+
+    Out.ar([12,13], output);
+    }).send;
+                </code></pre>
+            </div>
         </div>
     </section>
 
@@ -189,6 +288,75 @@
             </div>
             <div style="height: 0;overflow: hidden;padding-bottom: 56.25%;position: relative">
                 <iframe width="100%" height="100%" src="https://www.youtube.com/embed/wcX8Z57uoOw" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+            <br>
+
+            <script>
+                function changeChorus() {
+                    var x = document.getElementById("completeCodeChorus");
+                    var show = document.getElementById("showChorus");
+                    var hide = document.getElementById("hideChorus");
+                    if (x.style.display === "none") {
+                        x.style.display = "block";
+                        show.style.display = "none";
+                        hide.style.display = "block";
+                    } else {
+                        x.style.display = "none";
+                        show.style.display = "block";
+                        hide.style.display = "none";
+                    }
+                }
+            </script>
+
+            <div>
+                <a id="showChorus" onclick="changeChorus()" style="color: blue; cursor: pointer; font-style: italic; font-size: 150%">
+                    Click here to see the SuperCollider code
+                </a>
+                <a id="hideChorus" onclick="changeChorus()" style="color: blue; cursor: pointer; font-style: italic; font-size: 150%; display: none">
+                    Click here to hide the SuperCollider code
+                </a>
+            </div>
+
+
+            <div id="completeCodeChorus" style="display:none">
+
+                <pre style="background: #f4f4f4;
+                            border: 1px solid #ddd;
+                            border-left: 3px solid #f36d33;
+                            color: dimgray;
+                            page-break-inside: avoid;
+                            font-family: monospace;
+                            font-size: 12px;
+                            line-height: 1.6;
+                            margin-bottom: 1.6em;
+                            max-width: 100%;
+                            overflow: auto;
+                            padding: 1em 1.5em;
+                            display: block;
+                            word-wrap: break-word;">
+                            <code >
+    ~synth_octaverM288 = SynthDef("octaverM288",
+    {
+    arg
+    dry_level = 0.5,      // level of octave, range 0 - 1
+    growl_level = 0.5,    // mid control, range 0 - 1
+    girth_level = 0.5,    // bass control, range 0 - 1
+    mid_plus_switch = 0,   // select if mid+ switch is clicked, 1 if it is clicked, 0 otherwise
+    on = 0;
+
+    var signal = In.ar(10,2);
+    var signal_octave = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.5);
+    var signal_octave_LPF = LPF.ar(in: signal_octave,freq:220);
+    var growl_signal = BBandPass.ar(in:signal_octave,freq:200,bw:3,mul:growl_level*2);
+    var girth_signal = BBandPass.ar(in:signal_octave,freq:100,bw:3,mul:girth_level*1.5);
+    var mid_plus_signal = BPeakEQ.ar(in:signal,freq:400,rq:2,db:10,mul:mid_plus_switch);
+    var output = (signal*(1-mid_plus_switch) + mid_plus_signal) + ((growl_signal + girth_signal)*dry_level*1.5);
+
+    output = (output * on) + (signal * (1-on));
+
+    Out.ar([12,13], output);
+    }).send;
+                </code></pre>
             </div>
         </div>
     </section>
@@ -215,6 +383,75 @@
             </div>
             <div style="height: 0;overflow: hidden;padding-bottom: 56.25%;position: relative">
                 <iframe width="100%" height="100%" src="https://www.youtube.com/embed/Qp7uT5PEjos" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+            <br>
+
+            <script>
+                function changeDelay() {
+                    var x = document.getElementById("completeCodeDelay");
+                    var show = document.getElementById("showDelay");
+                    var hide = document.getElementById("hideDelay");
+                    if (x.style.display === "none") {
+                        x.style.display = "block";
+                        show.style.display = "none";
+                        hide.style.display = "block";
+                    } else {
+                        x.style.display = "none";
+                        show.style.display = "block";
+                        hide.style.display = "none";
+                    }
+                }
+            </script>
+
+            <div>
+                <a id="showDelay" onclick="changeDelay()" style="color: blue; cursor: pointer; font-style: italic; font-size: 150%">
+                    Click here to see the SuperCollider code
+                </a>
+                <a id="hideDelay" onclick="changeDelay()" style="color: blue; cursor: pointer; font-style: italic; font-size: 150%; display: none">
+                    Click here to hide the SuperCollider code
+                </a>
+            </div>
+
+
+            <div id="completeCodeDelay" style="display:none">
+
+                <pre style="background: #f4f4f4;
+                            border: 1px solid #ddd;
+                            border-left: 3px solid #f36d33;
+                            color: dimgray;
+                            page-break-inside: avoid;
+                            font-family: monospace;
+                            font-size: 12px;
+                            line-height: 1.6;
+                            margin-bottom: 1.6em;
+                            max-width: 100%;
+                            overflow: auto;
+                            padding: 1em 1.5em;
+                            display: block;
+                            word-wrap: break-word;">
+                            <code >
+    ~synth_octaverM288 = SynthDef("octaverM288",
+    {
+    arg
+    dry_level = 0.5,      // level of octave, range 0 - 1
+    growl_level = 0.5,    // mid control, range 0 - 1
+    girth_level = 0.5,    // bass control, range 0 - 1
+    mid_plus_switch = 0,   // select if mid+ switch is clicked, 1 if it is clicked, 0 otherwise
+    on = 0;
+
+    var signal = In.ar(10,2);
+    var signal_octave = PitchShift.ar(in:signal,windowSize:0.05,pitchRatio:0.5);
+    var signal_octave_LPF = LPF.ar(in: signal_octave,freq:220);
+    var growl_signal = BBandPass.ar(in:signal_octave,freq:200,bw:3,mul:growl_level*2);
+    var girth_signal = BBandPass.ar(in:signal_octave,freq:100,bw:3,mul:girth_level*1.5);
+    var mid_plus_signal = BPeakEQ.ar(in:signal,freq:400,rq:2,db:10,mul:mid_plus_switch);
+    var output = (signal*(1-mid_plus_switch) + mid_plus_signal) + ((growl_signal + girth_signal)*dry_level*1.5);
+
+    output = (output * on) + (signal * (1-on));
+
+    Out.ar([12,13], output);
+    }).send;
+                </code></pre>
             </div>
         </div>
     </section>
