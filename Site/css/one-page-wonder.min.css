@@ -1,3 +1,9 @@
+@media (max-width:320px) {
+    .display-4{
+        font-size: 35px;
+    }
+}
+
 .video-container {
     position: relative;
     padding-bottom: 56.25%;/*16:9*/
